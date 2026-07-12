@@ -4,7 +4,6 @@ import { AppError } from "./app-error";
 
 export function registerErrorHandler(app: FastifyInstance) {
   app.setErrorHandler((error, request, reply) => {
-    // Zod validation failure from schema-based routes
     if (hasZodFastifySchemaValidationErrors(error)) {
       return reply.code(400).send({
         error: "Validation failed",
@@ -15,12 +14,10 @@ export function registerErrorHandler(app: FastifyInstance) {
       });
     }
 
-    // Your own thrown application errors (e.g. "Invalid credentials", "Email already exists")
     if (error instanceof AppError) {
       return reply.code(error.statusCode).send({ error: error.message });
     }
 
-    // Fallback — log it, don't leak internals
     request.log.error(error);
     reply.code(500).send({ error: "Internal server error" });
   });
