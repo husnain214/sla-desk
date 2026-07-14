@@ -19,8 +19,8 @@ export async function createTicket(
 }
 
 export async function getTicketById(
-  ticketId: string,
   requestingUser: JwtPayload,
+  ticketId: string,
 ) {
   const ticket = await ticketRepository.findTicketById(ticketId);
 

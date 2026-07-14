@@ -6,7 +6,7 @@ import type { AppInstance } from "../../types";
 export async function authRoutes(fastify: AppInstance) {
   fastify.post(
     "/signup",
-    { schema: { body: signupSchema } },
+    { schema: { body: signupSchema, tags: ["Auth"] } },
     async (request, reply) => {
       const user = await signupUser(request.body);
       reply.code(201).send(user);
@@ -15,7 +15,7 @@ export async function authRoutes(fastify: AppInstance) {
 
   fastify.post(
     "/login",
-    { schema: { body: loginSchema } },
+    { schema: { body: loginSchema, tags: ["Auth"] } },
     async (request, reply) => {
       const user = await loginUser(request.body);
       const token = fastify.jwt.sign(
@@ -27,8 +27,8 @@ export async function authRoutes(fastify: AppInstance) {
   );
 
   fastify.get(
-    "/auth/me",
-    { preHandler: [authenticate] },
+    "/me",
+    { schema: { tags: ["Auth"] }, preHandler: [authenticate] },
     async (request, reply) => {
       reply.send(request.user);
     },

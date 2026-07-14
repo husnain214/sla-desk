@@ -25,6 +25,8 @@ export const ticketFiltersSchema = z.object({
   pageSize: z.coerce.number().int().positive().max(100).default(20),
 });
 
+export const getTicketByIdSchema = z.object({ id: z.string() });
+
 export type CreateTicketPayload = z.infer<typeof createTicketSchema>;
 export type TicketFiltersPayload = z.infer<typeof ticketFiltersSchema>;
 

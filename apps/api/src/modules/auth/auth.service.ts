@@ -15,7 +15,7 @@ export async function signupUser(payload: SignupPayload) {
     .limit(1);
 
   if (existingUser) {
-    throw new AppError("An account with this email already exists");
+    throw new AppError("An account with this email already exists", 409);
   }
 
   const hashedPassword = await hashPassword(payload.password);
@@ -42,7 +42,7 @@ export async function loginUser(payload: LoginPayload) {
     .limit(1);
 
   if (!user) {
-    throw new AppError("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   const passwordMatches = await comparePassword(
@@ -51,7 +51,7 @@ export async function loginUser(payload: LoginPayload) {
   );
 
   if (!passwordMatches) {
-    throw new AppError("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   const { passwordHash, ...loginUser } = user;
