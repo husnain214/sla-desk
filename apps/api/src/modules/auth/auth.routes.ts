@@ -1,7 +1,7 @@
+import type { AppInstance } from "../../types";
+import { authenticate } from "./auth.middleware";
 import { loginSchema, signupSchema } from "./auth.types";
 import { loginUser, signupUser } from "./auth.service";
-import { authenticate } from "./auth.middleware";
-import type { AppInstance } from "../../types";
 
 export async function authRoutes(fastify: AppInstance) {
   fastify.post(

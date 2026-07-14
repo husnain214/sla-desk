@@ -1,6 +1,7 @@
 import type { AppInstance } from "../../types";
+
 import { authenticate } from "../auth/auth.middleware";
-import { createTicket, getTicketById, listTickets } from "./tickets.service";
+import * as ticketService from "./tickets.service";
 import {
   createTicketSchema,
   getTicketByIdSchema,
@@ -15,7 +16,10 @@ export async function ticketRoutes(fastify: AppInstance) {
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      const ticket = await createTicket(request.user.userId, request.body);
+      const ticket = await ticketService.createTicket(
+        request.user.userId,
+        request.body,
+      );
       reply.code(201).send(ticket);
     },
   );
@@ -27,7 +31,10 @@ export async function ticketRoutes(fastify: AppInstance) {
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      const tickets = await listTickets(request.user, request.query);
+      const tickets = await ticketService.listTickets(
+        request.user,
+        request.query,
+      );
       reply.send(tickets);
     },
   );
@@ -39,7 +46,10 @@ export async function ticketRoutes(fastify: AppInstance) {
       preHandler: [authenticate],
     },
     async (request, reply) => {
-      const ticket = await getTicketById(request.user, request.params.id);
+      const ticket = await ticketService.getTicketById(
+        request.params.id,
+        request.user,
+      );
       reply.send(ticket);
     },
   );

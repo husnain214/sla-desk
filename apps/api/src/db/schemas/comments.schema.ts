@@ -12,6 +12,6 @@ export const comments = snakeCase.table("comments", {
     .references(() => users.id),
   body: text().notNull(),
   isInternal: boolean().notNull().default(false),
-  deletedAt: timestamp().notNull(),
+  deletedAt: timestamp(),
   createdAt: timestamp().notNull().defaultNow(),
 });
