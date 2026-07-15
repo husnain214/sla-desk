@@ -14,6 +14,7 @@ import { authRoutes } from "./modules/auth/auth.routes";
 import { registerErrorHandler } from "./shared/errors/error-handler";
 import { ticketRoutes } from "./modules/tickets/tickets.routes";
 import { commentRoutes } from "./modules/comments/comments.routes";
+import { registerRedisRateLimiter } from "./shared/utils/redis";
 
 export const app = Fastify({
   logger: true,
@@ -37,6 +38,7 @@ app.register(fastifySwaggerUi, {
 });
 
 registerErrorHandler(app);
+registerRedisRateLimiter(app);
 
 app.register(fastifyJwt, { secret: env.JWT_SECRET });
 

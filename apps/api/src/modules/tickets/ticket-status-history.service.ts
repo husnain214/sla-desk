@@ -43,4 +43,6 @@ export async function updateTicketStatus(
   });
 
   io.to(`ticket:${ticketId}`).emit("ticket:updated", updated);
+
+  return updated;
 }

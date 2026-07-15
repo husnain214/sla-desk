@@ -1,0 +1,1 @@
+ALTER TABLE "comments" ALTER COLUMN "deleted_at" DROP NOT NULL;

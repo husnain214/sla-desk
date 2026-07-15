@@ -1,18 +1,12 @@
 import type { SignupPayload, LoginPayload } from "./auth.types";
 
-import { eq } from "drizzle-orm";
+import * as authRepository from "./auth.repository";
 
-import { db } from "../../db";
-import { users } from "../../db/schemas/users.schema";
 import { comparePassword, hashPassword } from "../../shared/utils/auth";
 import { AppError } from "../../shared/errors/app-error";
 
 export async function signupUser(payload: SignupPayload) {
-  const [existingUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, payload.email))
-    .limit(1);
+  const existingUser = await authRepository.findUserByEmail(payload.email);
 
   if (existingUser) {
     throw new AppError("An account with this email already exists", 409);
@@ -20,14 +14,11 @@ export async function signupUser(payload: SignupPayload) {
 
   const hashedPassword = await hashPassword(payload.password);
 
-  const [user] = await db
-    .insert(users)
-    .values({
-      name: payload.name,
-      email: payload.email,
-      passwordHash: hashedPassword,
-    })
-    .returning();
+  const user = await authRepository.createUser({
+    name: payload.name,
+    email: payload.email,
+    passwordHash: hashedPassword,
+  });
 
   const { passwordHash, ...savedUser } = user;
 
@@ -35,11 +26,7 @@ export async function signupUser(payload: SignupPayload) {
 }
 
 export async function loginUser(payload: LoginPayload) {
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, payload.email))
-    .limit(1);
+  const user = await authRepository.findUserByEmail(payload.email);
 
   if (!user) {
     throw new AppError("Invalid credentials", 401);

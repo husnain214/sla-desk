@@ -5,7 +5,7 @@ import { slaBreachQueue } from "./workers/queue";
 
 async function startServer() {
   try {
-    setupRealtime(app);
+    await setupRealtime(app);
     await app.listen({ port: env.PORT, host: "0.0.0.0" });
 
     await slaBreachQueue.add(

@@ -1,44 +1,55 @@
 import { Worker } from "bullmq";
-import { env } from "../config/env";
+import { createClient } from "redis";
+import { Emitter } from "@socket.io/redis-emitter";
+import { and, eq, lt, inArray } from "drizzle-orm";
+
 import { db } from "../db";
 import { tickets } from "../db/schemas/tickets.schema";
-import { and, eq, inArray, lt } from "drizzle-orm";
+import { env } from "../config/env";
 import { escalationQueue } from "./queue";
 
-export const slaBreachWorker = new Worker(
-  "sla-breach-check",
-  async () => {
-    const now = new Date();
+async function startSlaBreachWorker() {
+  const redisClient = createClient({ url: env.REDIS_URL });
+  await redisClient.connect();
+  const emitter = new Emitter(redisClient);
 
-    const breached = await db
-      .update(tickets)
-      .set({ slaBreached: true })
-      .where(
-        and(
-          lt(tickets.slaDueAt, now),
-          eq(tickets.slaBreached, false),
-          inArray(tickets.status, ["open", "pending"]),
-        ),
-      )
-      .returning({
-        id: tickets.id,
-        title: tickets.title,
-        priority: tickets.priority,
-        assignedAgentId: tickets.assignedAgentId,
-        assignedTeamId: tickets.assignedTeamId,
-      });
+  const worker = new Worker(
+    "sla-breach-check",
+    async () => {
+      const now = new Date();
 
-    if (breached.length > 0) {
-      console.log(`SLA breach worker: flagged ${breached.length} ticket(s)`);
+      const breached = await db
+        .update(tickets)
+        .set({ slaBreached: true })
+        .where(
+          and(
+            lt(tickets.slaDueAt, now),
+            eq(tickets.slaBreached, false),
+            inArray(tickets.status, ["open", "pending"]),
+          ),
+        )
+        .returning();
 
-      await Promise.all(
-        breached.map((ticket) =>
-          escalationQueue.add("escalate-breach", { ticket }),
-        ),
-      );
-    }
-  },
-  {
-    connection: { url: env.REDIS_URL },
-  },
-);
+      if (breached.length > 0) {
+        console.log(`SLA breach worker: flagged ${breached.length} ticket(s)`);
+
+        for (const ticket of breached) {
+          emitter.to(`ticket:${ticket.id}`).emit("ticket:sla-breached", ticket);
+          await escalationQueue.add("escalate-breach", { ticket });
+        }
+      }
+    },
+    { connection: { url: env.REDIS_URL } },
+  );
+
+  worker.on("failed", (job, err) => {
+    console.error(`SLA breach job ${job?.id} failed:`, err.message);
+  });
+
+  console.log("SLA breach worker started.");
+}
+
+startSlaBreachWorker().catch((err) => {
+  console.error("Failed to start SLA breach worker:", err);
+  process.exit(1);
+});

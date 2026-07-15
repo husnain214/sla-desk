@@ -1,5 +1,6 @@
 import type { AppInstance } from "../../types";
 
+import { z } from "zod";
 import { authenticate } from "../auth/auth.middleware";
 
 import * as ticketService from "./tickets.service";
@@ -7,7 +8,6 @@ import * as ticketStatusHistoryService from "./ticket-status-history.service";
 
 import {
   createTicketSchema,
-  ticketIdSchema,
   ticketFiltersSchema,
   updateTicketStatusSchema,
   assignTicketSchema,
@@ -19,6 +19,12 @@ export async function ticketRoutes(fastify: AppInstance) {
     {
       schema: { body: createTicketSchema, tags: ["Tickets"] },
       preHandler: [authenticate],
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute",
+        },
+      },
     },
     async (request, reply) => {
       const ticket = await ticketService.createTicket(
@@ -47,7 +53,7 @@ export async function ticketRoutes(fastify: AppInstance) {
   fastify.get(
     "/:id",
     {
-      schema: { params: ticketIdSchema, tags: ["Tickets"] },
+      schema: { params: z.object({ id: z.string() }), tags: ["Tickets"] },
       preHandler: [authenticate],
     },
     async (request, reply) => {
@@ -60,11 +66,11 @@ export async function ticketRoutes(fastify: AppInstance) {
   );
 
   fastify.patch(
-    "/:ticketId/status",
+    "/:id/status",
     {
       preHandler: [authenticate],
       schema: {
-        params: ticketIdSchema,
+        params: z.object({ id: z.string() }),
         body: updateTicketStatusSchema,
         tags: ["Tickets"],
       },
@@ -83,7 +89,10 @@ export async function ticketRoutes(fastify: AppInstance) {
     "/:id/assign",
     {
       preHandler: [authenticate],
-      schema: { params: ticketIdSchema, body: assignTicketSchema },
+      schema: {
+        params: z.object({ id: z.string() }),
+        body: assignTicketSchema,
+      },
     },
     async (request, reply) => {
       const ticket = await ticketService.assignTicket(

@@ -8,6 +8,7 @@ import * as ticketService from "./tickets.service";
 import { calculateSlaDueAt } from "./sla";
 import { JwtPayload } from "../auth/auth.types";
 import { AppError } from "../../shared/errors/app-error";
+import { io } from "../../realtime/socket-server";
 
 export async function createTicket(
   customerId: string,
@@ -77,5 +78,12 @@ export async function assignTicket(
     }
   }
 
-  return ticketRepository.updateAssignment(ticketId, payload);
+  const updatedTicket = await ticketRepository.updateAssignment(
+    ticketId,
+    payload,
+  );
+
+  io.to(`ticket:${ticketId}`).emit("ticket:assigned", updatedTicket);
+
+  return updatedTicket;
 }

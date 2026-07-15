@@ -61,39 +61,38 @@ export async function findAllTickets(filters: TicketFiltersPayload) {
   if (filters.priority) {
     conditions.push(eq(tickets.priority, filters.priority));
   }
-
-  if (filters.search) {
-    conditions.push(
-      or(
-        ilike(tickets.title, `%${filters.search}%`),
-        ilike(tickets.description, `%${filters.search}%`),
-      ),
-    );
+  if (filters.status) {
+    conditions.push(eq(tickets.status, filters.status));
   }
-
   if (filters.assignedAgentId) {
     conditions.push(eq(tickets.assignedAgentId, filters.assignedAgentId));
   }
-
   if (filters.assignedTeamId) {
     conditions.push(eq(tickets.assignedTeamId, filters.assignedTeamId));
   }
-
   if (filters.slaBreached !== undefined) {
     conditions.push(eq(tickets.slaBreached, filters.slaBreached));
   }
 
-  if (filters.status) {
-    conditions.push(eq(tickets.status, filters.status));
+  let searchRank;
+  if (filters.search) {
+    conditions.push(
+      sql`${tickets.searchVector} @@ websearch_to_tsquery('english', ${filters.search})`,
+    );
+    searchRank = sql<number>`ts_rank(${tickets.searchVector}, websearch_to_tsquery('english', ${filters.search}))`;
   }
 
   const sortFn = filters.sortOrder === "asc" ? asc : desc;
+
+  const orderByClause = searchRank
+    ? desc(searchRank)
+    : sortFn(tickets[filters.sortBy]);
 
   return db
     .select()
     .from(tickets)
     .where(and(...conditions))
-    .orderBy(sortFn(tickets[filters.sortBy]))
+    .orderBy(orderByClause)
     .limit(filters.pageSize)
     .offset((filters.page - 1) * filters.pageSize);
 }

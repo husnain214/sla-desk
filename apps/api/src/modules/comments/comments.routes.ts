@@ -14,6 +14,12 @@ export async function commentRoutes(fastify: AppInstance) {
         tags: ["Comments"],
       },
       preHandler: [authenticate],
+      config: {
+        rateLimit: {
+          max: 10,
+          timeWindow: "1 minute",
+        },
+      },
     },
     async (request, reply) => {
       const comment = await commentService.createComment(

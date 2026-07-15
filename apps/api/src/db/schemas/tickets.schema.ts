@@ -1,5 +1,6 @@
 import {
   boolean,
+  customType,
   pgEnum,
   snakeCase,
   text,
@@ -24,6 +25,12 @@ export const ticketStatusEnum = pgEnum("ticket_status", [
   "closed",
 ]);
 
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
+
 export const tickets = snakeCase.table("tickets", {
   id: uuid().defaultRandom().primaryKey(),
   title: varchar({ length: 255 }).notNull(),
@@ -43,4 +50,5 @@ export const tickets = snakeCase.table("tickets", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
+  searchVector: tsvector("search_vector"),
 });

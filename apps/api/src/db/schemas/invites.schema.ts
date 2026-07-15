@@ -1,7 +1,7 @@
 import { uuid, varchar, timestamp, snakeCase } from "drizzle-orm/pg-core";
 import { userRoleEnum, users } from "./users.schema";
 
-export const invitesTable = snakeCase.table("invites", {
+export const invites = snakeCase.table("invites", {
   id: uuid().defaultRandom().primaryKey(),
   email: varchar({ length: 255 }).notNull(),
   role: userRoleEnum().notNull(),

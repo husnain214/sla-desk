@@ -29,8 +29,6 @@ export const updateTicketStatusSchema = z.object({
   status: z.enum(ticketStatusEnum.enumValues),
 });
 
-export const ticketIdSchema = z.object({ id: z.string() });
-
 export const assignTicketSchema = z
   .object({
     assignedAgentId: z.uuid().optional(),
