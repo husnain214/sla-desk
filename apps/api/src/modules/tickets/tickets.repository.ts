@@ -1,9 +1,15 @@
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { tickets } from "../../db/schemas/tickets.schema";
-import { NewTicket, TicketFiltersPayload } from "./tickets.types";
+import {
+  AssignTicketPayload,
+  NewTicket,
+  TicketFiltersPayload,
+} from "./tickets.types";
 import { comments } from "../../db/schemas/comments.schema";
 import { users } from "../../db/schemas/users.schema";
+import { DbOrTransaction } from "../../types";
+import { TicketStatus } from "./ticket-state-machine";
 
 export async function createTicket(data: NewTicket) {
   const rows = await db
@@ -90,4 +96,29 @@ export async function findAllTickets(filters: TicketFiltersPayload) {
     .orderBy(sortFn(tickets[filters.sortBy]))
     .limit(filters.pageSize)
     .offset((filters.page - 1) * filters.pageSize);
+}
+
+export async function updateStatus(
+  ticketId: string,
+  status: TicketStatus,
+  tx: DbOrTransaction = db,
+) {
+  const [ticket] = await tx
+    .update(tickets)
+    .set({ status })
+    .where(eq(tickets.id, ticketId))
+    .returning();
+  return ticket;
+}
+
+export async function updateAssignment(
+  ticketId: string,
+  data: Pick<NewTicket, "assignedAgentId" | "assignedTeamId">,
+) {
+  const [ticket] = await db
+    .update(tickets)
+    .set(data)
+    .where(eq(tickets.id, ticketId))
+    .returning();
+  return ticket;
 }

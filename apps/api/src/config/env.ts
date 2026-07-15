@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number(),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
+  REDIS_URL: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);

@@ -1,11 +1,16 @@
 import type { AppInstance } from "../../types";
 
 import { authenticate } from "../auth/auth.middleware";
+
 import * as ticketService from "./tickets.service";
+import * as ticketStatusHistoryService from "./ticket-status-history.service";
+
 import {
   createTicketSchema,
-  getTicketByIdSchema,
+  ticketIdSchema,
   ticketFiltersSchema,
+  updateTicketStatusSchema,
+  assignTicketSchema,
 } from "./tickets.types";
 
 export async function ticketRoutes(fastify: AppInstance) {
@@ -42,12 +47,48 @@ export async function ticketRoutes(fastify: AppInstance) {
   fastify.get(
     "/:id",
     {
-      schema: { params: getTicketByIdSchema, tags: ["Tickets"] },
+      schema: { params: ticketIdSchema, tags: ["Tickets"] },
       preHandler: [authenticate],
     },
     async (request, reply) => {
       const ticket = await ticketService.getTicketById(
         request.params.id,
+        request.user,
+      );
+      reply.send(ticket);
+    },
+  );
+
+  fastify.patch(
+    "/:ticketId/status",
+    {
+      preHandler: [authenticate],
+      schema: {
+        params: ticketIdSchema,
+        body: updateTicketStatusSchema,
+        tags: ["Tickets"],
+      },
+    },
+    async (request, reply) => {
+      const ticket = await ticketStatusHistoryService.updateTicketStatus(
+        request.params.id,
+        request.body.status,
+        request.user,
+      );
+      reply.send(ticket);
+    },
+  );
+
+  fastify.patch(
+    "/:id/assign",
+    {
+      preHandler: [authenticate],
+      schema: { params: ticketIdSchema, body: assignTicketSchema },
+    },
+    async (request, reply) => {
+      const ticket = await ticketService.assignTicket(
+        request.params.id,
+        request.body,
         request.user,
       );
       reply.send(ticket);

@@ -1,5 +1,10 @@
-import { CreateTicketPayload, TicketFiltersPayload } from "./tickets.types";
+import {
+  AssignTicketPayload,
+  CreateTicketPayload,
+  TicketFiltersPayload,
+} from "./tickets.types";
 import * as ticketRepository from "./tickets.repository";
+import * as ticketService from "./tickets.service";
 import { calculateSlaDueAt } from "./sla";
 import { JwtPayload } from "../auth/auth.types";
 import { AppError } from "../../shared/errors/app-error";
@@ -47,4 +52,30 @@ export async function listTickets(
   }
 
   return ticketRepository.findAllTickets(filters);
+}
+
+export async function assignTicket(
+  ticketId: string,
+  payload: AssignTicketPayload,
+  requestingUser: JwtPayload,
+) {
+  if (requestingUser.role === "customer") {
+    throw new AppError("Not allowed to assign tickets", 403);
+  }
+
+  const ticket = await ticketService.getTicketById(ticketId, requestingUser);
+
+  if (requestingUser.role === "agent") {
+    const isSelfClaim = payload.assignedAgentId === requestingUser.userId;
+    const isUnassigned = ticket.assignedAgentId === null;
+
+    if (!isSelfClaim || !isUnassigned) {
+      throw new AppError(
+        "Agents can only claim unassigned tickets for themselves",
+        403,
+      );
+    }
+  }
+
+  return ticketRepository.updateAssignment(ticketId, payload);
 }
