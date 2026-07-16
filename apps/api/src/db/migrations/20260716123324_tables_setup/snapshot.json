@@ -1,9 +1,9 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "e0515b79-1886-4fc8-9540-d940e63c39ed",
+  "id": "00a3fceb-da54-4534-9752-3e1b33403d6c",
   "prevIds": [
-    "366fc69f-7d3c-4a2b-aaca-688fbfdfd5b0"
+    "00000000-0000-0000-0000-000000000000"
   ],
   "ddl": [
     {
@@ -76,7 +76,7 @@
     },
     {
       "isRlsEnabled": false,
-      "name": "ticket_status_hsitory",
+      "name": "ticket_status_history",
       "entityType": "tables",
       "schema": "public"
     },
@@ -264,7 +264,7 @@
     {
       "type": "timestamp",
       "typeSchema": null,
-      "notNull": true,
+      "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
@@ -506,7 +506,7 @@
       "name": "id",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "uuid",
@@ -519,7 +519,7 @@
       "name": "ticket_id",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "ticket_status",
@@ -532,7 +532,7 @@
       "name": "from_status",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "ticket_status",
@@ -545,7 +545,7 @@
       "name": "to_status",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "uuid",
@@ -558,7 +558,7 @@
       "name": "changed_by",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "timestamp",
@@ -571,7 +571,7 @@
       "name": "created_at",
       "entityType": "columns",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "type": "uuid",
@@ -964,10 +964,10 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ticket_status_hsitory_ticket_id_tickets_id_fkey",
+      "name": "ticket_status_history_ticket_id_tickets_id_fkey",
       "entityType": "fks",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "nameExplicit": false,
@@ -981,10 +981,10 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ticket_status_hsitory_changed_by_users_id_fkey",
+      "name": "ticket_status_history_changed_by_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
-      "table": "ticket_status_hsitory"
+      "table": "ticket_status_history"
     },
     {
       "nameExplicit": false,
@@ -1109,9 +1109,9 @@
         "id"
       ],
       "nameExplicit": false,
-      "name": "ticket_status_hsitory_pkey",
+      "name": "ticket_status_history_pkey",
       "schema": "public",
-      "table": "ticket_status_hsitory",
+      "table": "ticket_status_history",
       "entityType": "pks"
     },
     {
@@ -1157,7 +1157,5 @@
       "entityType": "uniques"
     }
   ],
-  "renames": [
-    "public.users.users_name_key->public.users.users_email_key"
-  ]
+  "renames": []
 }

@@ -2,7 +2,7 @@ import { snakeCase, timestamp, uuid } from "drizzle-orm/pg-core";
 import { tickets, ticketStatusEnum } from "./tickets.schema";
 import { users } from "./users.schema";
 
-export const ticketStatusHistory = snakeCase.table("ticket_status_hsitory", {
+export const ticketStatusHistory = snakeCase.table("ticket_status_history", {
   id: uuid().defaultRandom().primaryKey(),
   ticketId: uuid()
     .notNull()

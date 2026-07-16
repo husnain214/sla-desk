@@ -1,12 +1,7 @@
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { tickets } from "../../db/schemas/tickets.schema";
-import {
-  AssignTicketPayload,
-  NewTicket,
-  TicketFiltersPayload,
-} from "./tickets.types";
-import { comments } from "../../db/schemas/comments.schema";
+import { NewTicket, TicketFiltersPayload } from "./tickets.types";
 import { users } from "../../db/schemas/users.schema";
 import { DbOrTransaction } from "../../types";
 import { TicketStatus } from "./ticket-state-machine";
@@ -22,7 +17,10 @@ export async function createTicket(data: NewTicket) {
   return rows[0];
 }
 
-export async function findTicketById(id: string) {
+export async function findTicketById(
+  id: string,
+  includeInternalComments: boolean,
+) {
   const rows = await db
     .select({
       ticket: tickets,
@@ -32,13 +30,22 @@ export async function findTicketById(id: string) {
         email: users.email,
         role: users.role,
       },
-      comments: sql`COALESCE(json_agg(${comments}) FILTER (WHERE ${comments.id} IS NOT NULL), '[]')`,
+      comments: sql`COALESCE(
+        (
+          SELECT json_agg(c) FROM comments c 
+          WHERE c.ticket_id = ${tickets.id} 
+            AND c.deleted_at IS NULL
+            ${includeInternalComments ? sql`` : sql`AND c.is_internal = false`}
+        ), '[]')`,
+      attachments: sql`COALESCE(
+        (
+          SELECT json_agg(a) FROM attachments a
+          WHERE a.ticket_id = ${tickets.id}
+        ), '[]')`,
     })
     .from(tickets)
-    .leftJoin(comments, eq(comments.ticketId, tickets.id))
     .leftJoin(users, eq(users.id, tickets.customerId))
-    .where(eq(tickets.id, id))
-    .groupBy(tickets.id, users.id);
+    .where(eq(tickets.id, id));
 
   if (rows.length === 0) return null;
 

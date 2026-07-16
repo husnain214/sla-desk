@@ -14,7 +14,11 @@ export async function attachmentRoutes(fastify: AppInstance) {
     "/:ticketId/attachments/upload-url",
     {
       preHandler: [authenticate],
-      schema: { params: ticketParamsSchema, body: requestUploadUrlSchema },
+      schema: {
+        params: ticketParamsSchema,
+        body: requestUploadUrlSchema,
+        tags: ["Attachments"],
+      },
     },
     async (request, reply) => {
       const result = await attachmentService.requestUploadUrl(
@@ -30,7 +34,11 @@ export async function attachmentRoutes(fastify: AppInstance) {
     "/:ticketId/attachments",
     {
       preHandler: [authenticate],
-      schema: { params: ticketParamsSchema, body: confirmUploadSchema },
+      schema: {
+        params: ticketParamsSchema,
+        body: confirmUploadSchema,
+        tags: ["Attachments"],
+      },
     },
     async (request, reply) => {
       const attachment = await attachmentService.confirmUpload(
@@ -46,7 +54,7 @@ export async function attachmentRoutes(fastify: AppInstance) {
     "/attachments/:id/download-url",
     {
       preHandler: [authenticate],
-      schema: { params: z.object({ id: z.uuid() }) },
+      schema: { params: z.object({ id: z.uuid() }), tags: ["Attachments"] },
     },
     async (request, reply) => {
       const result = await attachmentService.getDownloadUrl(

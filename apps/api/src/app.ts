@@ -38,7 +38,7 @@ app.register(fastifySwaggerUi, {
 });
 
 registerErrorHandler(app);
-registerRedisRateLimiter(app);
+await registerRedisRateLimiter(app);
 
 app.register(fastifyJwt, { secret: env.JWT_SECRET });
 

@@ -28,7 +28,11 @@ export async function getTicketById(
   ticketId: string,
   requestingUser: JwtPayload,
 ) {
-  const ticket = await ticketRepository.findTicketById(ticketId);
+  const includeInternalComments = requestingUser.role !== "customer";
+  const ticket = await ticketRepository.findTicketById(
+    ticketId,
+    includeInternalComments,
+  );
 
   if (!ticket) {
     throw new AppError("Ticket not found", 404);
