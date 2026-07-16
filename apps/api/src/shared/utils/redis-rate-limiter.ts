@@ -1,18 +1,21 @@
 import { FastifyInstance } from "fastify";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { createClient } from "redis";
+import Redis from "ioredis";
+import fp from "fastify-plugin";
 import { env } from "../../config/env";
 
-export async function registerRedisRateLimiter(app: FastifyInstance) {
-  const redisClient = createClient({ url: env.REDIS_URL });
-  await redisClient.connect();
+export const redisRateLimiter = fp((app: FastifyInstance) => {
+  const redisClient = new Redis(env.REDIS_URL);
 
   app.register(fastifyRateLimit, {
     global: false,
     redis: redisClient,
-    keyGenerator: (request) => request.user.userId ?? request.ip,
+    keyGenerator: async (request) => {
+      await request.jwtVerify();
+      return request.user.userId ?? request.ip;
+    },
     errorResponseBuilder: (_, context) => ({
       error: `Rate limit exceeded. Try again in ${context.after}.`,
     }),
   });
-}
+});

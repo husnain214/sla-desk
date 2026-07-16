@@ -11,10 +11,10 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 
 import { env } from "./config/env";
 import { authRoutes } from "./modules/auth/auth.routes";
-import { registerErrorHandler } from "./shared/errors/error-handler";
+import { errorHandler } from "./shared/errors/error-handler";
 import { ticketRoutes } from "./modules/tickets/tickets.routes";
 import { commentRoutes } from "./modules/comments/comments.routes";
-import { registerRedisRateLimiter } from "./shared/utils/redis";
+import { redisRateLimiter } from "./shared/utils/redis-rate-limiter";
 
 export const app = Fastify({
   logger: true,
@@ -37,8 +37,8 @@ app.register(fastifySwaggerUi, {
   routePrefix: "/docs",
 });
 
-registerErrorHandler(app);
-await registerRedisRateLimiter(app);
+app.register(errorHandler);
+await app.register(redisRateLimiter);
 
 app.register(fastifyJwt, { secret: env.JWT_SECRET });
 

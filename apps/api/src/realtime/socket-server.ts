@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
-import { createClient } from "redis";
+import Redis from "ioredis";
 
 import { env } from "../config/env";
 
@@ -12,10 +12,8 @@ export async function initSocketServer(app: FastifyInstance) {
     cors: { origin: "*" },
   });
 
-  const pubClient = createClient({ url: env.REDIS_URL });
+  const pubClient = new Redis(env.REDIS_URL);
   const subClient = pubClient.duplicate();
-
-  await Promise.all([pubClient.connect(), subClient.connect()]);
 
   io.adapter(createAdapter(pubClient, subClient));
 

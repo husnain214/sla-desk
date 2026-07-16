@@ -37,7 +37,7 @@ describe("ticket access RBAC", () => {
       headers: { authorization: `Bearer ${tokenA}` },
       payload: { title: "A's ticket", priority: "low" },
     });
-    const ticket = createRes.json();
+    const ticket = await createRes.json();
 
     const viewRes = await app.inject({
       method: "GET",

@@ -1,8 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import { hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
+import fp from "fastify-plugin";
 import { AppError } from "./app-error";
 
-export function registerErrorHandler(app: FastifyInstance) {
+export const errorHandler = fp((app: FastifyInstance) => {
   app.setErrorHandler((error, request, reply) => {
     if (hasZodFastifySchemaValidationErrors(error)) {
       return reply.code(400).send({
@@ -21,4 +22,4 @@ export function registerErrorHandler(app: FastifyInstance) {
     request.log.error(error);
     reply.code(500).send({ error: "Internal server error" });
   });
-}
+});
