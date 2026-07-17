@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, IBM_Plex_Mono, Geist } from "next/font/google";
+import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
 import Providers from "@/providers";
-
-import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import "./globals.css";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -31,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(display.variable, body.variable, mono.variable, "font-sans", geist.variable)}
+      className={cn(display.variable, body.variable, mono.variable)}
     >
       <Providers>
         <body className="min-h-full flex flex-col">{children}</body>
