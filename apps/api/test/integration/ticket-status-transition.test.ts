@@ -1,0 +1,45 @@
+import { describe, it, expect } from "vitest";
+import { app } from "../helpers/build-app";
+import { signupAndLogin, createTicketAs, login } from "../helpers/auth";
+
+describe("ticket status transitions", () => {
+  it("rejects an invalid jump from open directly to closed", async () => {
+    const customerToken = await signupAndLogin("customer-e@test.com");
+    const ticket = await createTicketAs(customerToken);
+    const agentToken = await login("agent@test.com");
+
+    const res = await app.inject({
+      method: "PATCH",
+      url: `/tickets/${ticket.id}/status`,
+      headers: { authorization: `Bearer ${agentToken}` },
+      payload: { status: "closed" },
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  it("allows a valid transition and records history", async () => {
+    const customerToken = await signupAndLogin("customer-f@test.com");
+    const ticket = await createTicketAs(customerToken);
+    const agentToken = await login("agent@test.com");
+
+    const res = await app.inject({
+      method: "PATCH",
+      url: `/tickets/${ticket.id}/status`,
+      headers: { authorization: `Bearer ${agentToken}` },
+      payload: { status: "pending" },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().status).toBe("pending");
+
+    const historyRes = await app.inject({
+      method: "GET",
+      url: `/tickets/${ticket.id}/history`,
+      headers: { authorization: `Bearer ${agentToken}` },
+    });
+
+    expect(historyRes.json()).toHaveLength(1);
+    expect(historyRes.json()[0].toStatus).toBe("pending");
+  });
+});

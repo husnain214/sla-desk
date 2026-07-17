@@ -15,6 +15,7 @@ import { errorHandler } from "./shared/errors/error-handler";
 import { ticketRoutes } from "./modules/tickets/tickets.routes";
 import { commentRoutes } from "./modules/comments/comments.routes";
 import { redisRateLimiter } from "./shared/utils/redis-rate-limiter";
+import { inviteRoutes } from "./modules/invites/invites.routes";
 
 export const app = Fastify({
   logger: true,
@@ -45,6 +46,7 @@ app.register(fastifyJwt, { secret: env.JWT_SECRET });
 app.register(authRoutes, { prefix: "/auth" });
 app.register(ticketRoutes, { prefix: "/tickets" });
 app.register(commentRoutes, { prefix: "/tickets/:ticketId/comments" });
+app.register(inviteRoutes, { prefix: "/invites" });
 
 app.get("/", (_, res) => {
   res.send({ message: "Server is running" });

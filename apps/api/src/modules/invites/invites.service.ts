@@ -12,8 +12,8 @@ import { hashPassword } from "../../shared/utils/auth";
 const INVITE_EXPIRY_HOURS = 48;
 
 export async function createInvite(
-  requestingUser: JwtPayload,
   payload: CreateInvitePayload,
+  requestingUser: JwtPayload,
 ) {
   const token = crypto.randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + INVITE_EXPIRY_HOURS * 60 * 60 * 1000);

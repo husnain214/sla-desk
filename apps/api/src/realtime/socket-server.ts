@@ -15,7 +15,16 @@ export async function initSocketServer(app: FastifyInstance) {
   const pubClient = new Redis(env.REDIS_URL);
   const subClient = pubClient.duplicate();
 
-  io.adapter(createAdapter(pubClient, subClient));
+  await Promise.all([
+    new Promise<void>((resolve, reject) => {
+      pubClient.once("ready", resolve);
+      pubClient.once("error", reject);
+    }),
+    new Promise<void>((resolve, reject) => {
+      subClient.once("ready", resolve);
+      subClient.once("error", reject);
+    }),
+  ]);
 
   app.addHook("preClose", (done) => {
     io.local.disconnectSockets(true);

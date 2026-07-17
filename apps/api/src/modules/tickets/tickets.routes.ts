@@ -81,6 +81,7 @@ export async function ticketRoutes(fastify: AppInstance) {
         request.body.status,
         request.user,
       );
+
       reply.send(ticket);
     },
   );
@@ -101,6 +102,21 @@ export async function ticketRoutes(fastify: AppInstance) {
         request.user,
       );
       reply.send(ticket);
+    },
+  );
+
+  fastify.get(
+    "/:id/history",
+    {
+      preHandler: [authenticate],
+      schema: { params: z.object({ id: z.string() }) },
+    },
+    async (request, reply) => {
+      const history = await ticketStatusHistoryService.getTicketHistory(
+        request.params.id,
+        request.user,
+      );
+      reply.send(history);
     },
   );
 }

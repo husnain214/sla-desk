@@ -19,7 +19,7 @@ export async function requestUploadUrl(
   requestingUser: JwtPayload,
   payload: RequestUploadUrlPayload,
 ) {
-  await ticketsService.getTicketById(ticketId, requestingUser); // access check, reused
+  await ticketsService.getTicketById(ticketId, requestingUser);
 
   const fileKey = `tickets/${ticketId}/${crypto.randomUUID()}-${payload.fileName}`;
 

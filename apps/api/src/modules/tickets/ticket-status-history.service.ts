@@ -22,7 +22,7 @@ export async function updateTicketStatus(
     );
   }
 
-  const updated = db.transaction(async (tx) => {
+  const updatedTicket = await db.transaction(async (tx) => {
     const updated = await ticketRepository.updateStatus(
       ticketId,
       newStatus,
@@ -42,7 +42,15 @@ export async function updateTicketStatus(
     return updated;
   });
 
-  io.to(`ticket:${ticketId}`).emit("ticket:updated", updated);
+  io.to(`ticket:${ticketId}`).emit("ticket:updated", updatedTicket);
 
-  return updated;
+  return updatedTicket;
+}
+
+export async function getTicketHistory(
+  ticketId: string,
+  requestingUser: JwtPayload,
+) {
+  await ticketService.getTicketById(ticketId, requestingUser);
+  return ticketStatusHistoryRepository.findHistoryForTicket(ticketId);
 }
