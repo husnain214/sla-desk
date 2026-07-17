@@ -3,10 +3,12 @@ import jwt from "jsonwebtoken";
 
 import { env } from "../config/env";
 import type { JwtPayload } from "../modules/auth/auth.types";
+import { parseCookies } from "../shared/utils/auth";
 
 export function registerSocketAuth(io: Server) {
   io.use((socket: Socket, next) => {
-    const token = socket.handshake.auth?.token;
+    const cookies = parseCookies(socket.handshake.headers.cookie);
+    const token = cookies.token;
 
     if (!token) {
       return next(new Error("Unauthorized"));

@@ -2,6 +2,7 @@ import type { AppInstance } from "../../types";
 import { authenticate } from "./auth.middleware";
 import { loginSchema, signupSchema } from "./auth.types";
 import { loginUser, signupUser } from "./auth.service";
+import { env } from "../../config/env";
 
 export async function authRoutes(fastify: AppInstance) {
   fastify.post(
@@ -22,7 +23,16 @@ export async function authRoutes(fastify: AppInstance) {
         { userId: user.id, role: user.role },
         { expiresIn: "1h" },
       );
-      reply.send({ token });
+
+      reply.setCookie("token", token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60, // 1 hour, matches JWT expiry
+      });
+
+      reply.send({ user });
     },
   );
 
@@ -33,4 +43,9 @@ export async function authRoutes(fastify: AppInstance) {
       reply.send(request.user);
     },
   );
+
+  fastify.post("/logout", async (_, reply) => {
+    reply.clearCookie("token", { path: "/" });
+    reply.send({ success: true });
+  });
 }

@@ -8,6 +8,8 @@ import {
 } from "fastify-type-provider-zod";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import fastifyCookie from "@fastify/cookie";
+import fastifyCors from "@fastify/cors";
 
 import { env } from "./config/env";
 import { authRoutes } from "./modules/auth/auth.routes";
@@ -23,6 +25,20 @@ export const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+app.register(fastifyCors, {
+  origin: env.FRONTEND_URL,
+  credentials: true,
+});
+
+app.register(fastifyCookie);
+app.register(fastifyJwt, {
+  secret: env.JWT_SECRET,
+  cookie: {
+    cookieName: "token",
+    signed: false,
+  },
+});
 
 app.register(fastifySwagger, {
   openapi: {
@@ -40,8 +56,6 @@ app.register(fastifySwaggerUi, {
 
 app.register(errorHandler);
 await app.register(redisRateLimiter);
-
-app.register(fastifyJwt, { secret: env.JWT_SECRET });
 
 app.register(authRoutes, { prefix: "/auth" });
 app.register(ticketRoutes, { prefix: "/tickets" });
