@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { app } from "../helpers/build-app";
-import { login, signup } from "../helpers/auth";
+import { authHeader, login, signup } from "../helpers/auth";
 
 describe("ticket access RBAC", () => {
   beforeAll(async () => {
@@ -17,7 +17,7 @@ describe("ticket access RBAC", () => {
     const createRes = await app.inject({
       method: "POST",
       url: "/tickets",
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: authHeader(tokenA),
       payload: { title: "A's ticket", priority: "low" },
     });
     const ticket = await createRes.json();
@@ -25,7 +25,7 @@ describe("ticket access RBAC", () => {
     const viewRes = await app.inject({
       method: "GET",
       url: `/tickets/${ticket.id}`,
-      headers: { authorization: `Bearer ${tokenB}` },
+      headers: authHeader(tokenB),
     });
 
     expect(viewRes.statusCode).toBe(403);

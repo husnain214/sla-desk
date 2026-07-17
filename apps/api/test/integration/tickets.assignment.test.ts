@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { app } from "../helpers/build-app";
-import { signupAndLogin, createTicketAs, login } from "../helpers/auth";
+import {
+  signupAndLogin,
+  createTicketAs,
+  login,
+  authHeader,
+} from "../helpers/auth";
 
 describe("ticket assignment RBAC", () => {
   it("agent can claim an unassigned ticket for themselves", async () => {
@@ -12,14 +17,14 @@ describe("ticket assignment RBAC", () => {
     const meRes = await app.inject({
       method: "GET",
       url: "/auth/me",
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
     });
     const agentId = meRes.json().userId;
 
     const res = await app.inject({
       method: "PATCH",
       url: `/tickets/${ticket.id}/assign`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { assignedAgentId: agentId },
     });
 
@@ -35,7 +40,7 @@ describe("ticket assignment RBAC", () => {
     const res = await app.inject({
       method: "PATCH",
       url: `/tickets/${ticket.id}/assign`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { assignedAgentId: "00000000-0000-0000-0000-000000000000" }, // some other fake agent id
     });
 

@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { app } from "../helpers/build-app";
-import { signupAndLogin, createTicketAs, login } from "../helpers/auth";
+import {
+  signupAndLogin,
+  createTicketAs,
+  login,
+  authHeader,
+} from "../helpers/auth";
 
 describe("comment isInternal RBAC", () => {
   it("customer never sees internal comments, even if they try to send isInternal: true", async () => {
@@ -11,7 +16,7 @@ describe("comment isInternal RBAC", () => {
     const commentRes = await app.inject({
       method: "POST",
       url: `/tickets/${ticket.id}/comments`,
-      headers: { authorization: `Bearer ${customerToken}` },
+      headers: authHeader(customerToken),
       payload: { body: "Trying to sneak an internal note", isInternal: true },
     });
 
@@ -29,14 +34,14 @@ describe("comment isInternal RBAC", () => {
     await app.inject({
       method: "POST",
       url: `/tickets/${ticket.id}/comments`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { body: "Internal note for the team", isInternal: true },
     });
 
     const publicRes = await app.inject({
       method: "POST",
       url: `/tickets/${ticket.id}/comments`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { body: "Public reply to customer", isInternal: false },
     });
 
@@ -44,7 +49,7 @@ describe("comment isInternal RBAC", () => {
     const ticketDetailRes = await app.inject({
       method: "GET",
       url: `/tickets/${ticket.id}`,
-      headers: { authorization: `Bearer ${customerToken}` },
+      headers: authHeader(customerToken),
     });
 
     const comments = ticketDetailRes.json().comments;

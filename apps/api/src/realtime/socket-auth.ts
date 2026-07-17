@@ -1,14 +1,20 @@
 import type { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
+import type { JwtPayload } from "../modules/auth/auth.types";
 
 import { env } from "../config/env";
-import type { JwtPayload } from "../modules/auth/auth.types";
-import { parseCookies } from "../shared/utils/auth";
+import cookie from "cookie";
 
 export function registerSocketAuth(io: Server) {
   io.use((socket: Socket, next) => {
-    const cookies = parseCookies(socket.handshake.headers.cookie);
-    const token = cookies.token;
+    const rawCookies = socket.handshake.headers.cookie;
+
+    if (!rawCookies) {
+      return next(new Error("Unauthorized"));
+    }
+
+    const parsedCookies = cookie.parse(rawCookies);
+    const token = parsedCookies.token;
 
     if (!token) {
       return next(new Error("Unauthorized"));

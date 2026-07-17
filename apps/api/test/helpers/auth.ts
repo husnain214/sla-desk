@@ -15,7 +15,16 @@ export async function login(email: string) {
     url: "/auth/login",
     payload: { email, password: "password123" },
   });
-  return res.json().token;
+  const cookies = res.cookies;
+  const tokenCookie = cookies.find((c) => c.name === "token");
+
+  if (!tokenCookie) {
+    throw new Error(
+      `Login failed for ${email}: no token cookie returned. Response: ${res.body}`,
+    );
+  }
+
+  return tokenCookie.value;
 }
 
 export async function signupAndLogin(email: string, name = "Test User") {
@@ -27,8 +36,12 @@ export async function createTicketAs(token: string, overrides = {}) {
   const res = await app.inject({
     method: "POST",
     url: "/tickets",
-    headers: { authorization: `Bearer ${token}` },
+    headers: authHeader(token),
     payload: { title: "Test ticket", priority: "low", ...overrides },
   });
   return res.json();
+}
+
+export function authHeader(token: string) {
+  return { cookie: `token=${token}` };
 }

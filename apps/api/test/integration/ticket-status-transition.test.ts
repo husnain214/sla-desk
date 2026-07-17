@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { app } from "../helpers/build-app";
-import { signupAndLogin, createTicketAs, login } from "../helpers/auth";
+import {
+  signupAndLogin,
+  createTicketAs,
+  login,
+  authHeader,
+} from "../helpers/auth";
 
 describe("ticket status transitions", () => {
   it("rejects an invalid jump from open directly to closed", async () => {
@@ -11,7 +16,7 @@ describe("ticket status transitions", () => {
     const res = await app.inject({
       method: "PATCH",
       url: `/tickets/${ticket.id}/status`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { status: "closed" },
     });
 
@@ -26,7 +31,7 @@ describe("ticket status transitions", () => {
     const res = await app.inject({
       method: "PATCH",
       url: `/tickets/${ticket.id}/status`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
       payload: { status: "pending" },
     });
 
@@ -36,7 +41,7 @@ describe("ticket status transitions", () => {
     const historyRes = await app.inject({
       method: "GET",
       url: `/tickets/${ticket.id}/history`,
-      headers: { authorization: `Bearer ${agentToken}` },
+      headers: authHeader(agentToken),
     });
 
     expect(historyRes.json()).toHaveLength(1);

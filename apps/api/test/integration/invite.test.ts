@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { app } from "../helpers/build-app";
-import { login } from "../helpers/auth";
+import { authHeader, login, signupAndLogin } from "../helpers/auth";
 import { eq } from "drizzle-orm";
 import { users } from "../../src/db/schemas/users.schema";
 import { invites } from "../../src/db/schemas/invites.schema";
@@ -9,12 +9,12 @@ import crypto from "crypto";
 
 describe("invite flow", () => {
   it("admin can create an invite, and the invited person can accept it as an agent", async () => {
-    const adminToken = await login("admin@test.com"); // assumes seeded admin
+    const adminToken = await login("admin@test.com");
 
     const inviteRes = await app.inject({
       method: "POST",
       url: "/invites",
-      headers: { authorization: `Bearer ${adminToken}` },
+      headers: authHeader(adminToken),
       payload: { email: "new-agent@test.com", role: "agent" },
     });
     const invite = inviteRes.json();
@@ -34,8 +34,16 @@ describe("invite flow", () => {
   });
 
   it("a non-admin cannot create an invite", async () => {
-    const customerToken = await login("customer-i@test.com"); // will fail without seeding, see note below
-    // ...
+    const customerToken = await signupAndLogin("customer-i@test.com");
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/invites",
+      headers: authHeader(customerToken),
+      payload: { email: "attempted-invite@test.com", role: "agent" },
+    });
+
+    expect(res.statusCode).toBe(403);
   });
 
   it("an invite cannot be used twice", async () => {
@@ -44,7 +52,7 @@ describe("invite flow", () => {
     const inviteRes = await app.inject({
       method: "POST",
       url: "/invites",
-      headers: { authorization: `Bearer ${adminToken}` },
+      headers: authHeader(adminToken),
       payload: { email: "reused-invite@test.com", role: "agent" },
     });
     const invite = inviteRes.json();
