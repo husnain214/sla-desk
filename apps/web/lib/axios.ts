@@ -5,8 +5,6 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-console.log(process.env.NEXT_PUBLIC_API_URL);
-
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {

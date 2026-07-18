@@ -1,5 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { signupFormSchema, SignupFormValues } from "@/features/auth/auth.types";
+import { useSignupMutation } from "@/features/auth/hooks";
+
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,14 +18,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { signupFormSchema, SignupFormValues } from "@/features/auth/auth.types";
-import { useSignupMutation } from "@/features/auth/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 
 export default function Signup() {
   const router = useRouter();
