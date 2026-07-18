@@ -57,10 +57,10 @@ app.register(fastifySwaggerUi, {
 app.register(errorHandler);
 await app.register(redisRateLimiter);
 
-app.register(authRoutes, { prefix: "/auth" });
-app.register(ticketRoutes, { prefix: "/tickets" });
-app.register(commentRoutes, { prefix: "/tickets/:ticketId/comments" });
-app.register(inviteRoutes, { prefix: "/invites" });
+app.register(authRoutes, { prefix: "/api/auth" });
+app.register(ticketRoutes, { prefix: "/api/tickets" });
+app.register(commentRoutes, { prefix: "/api/tickets/:ticketId/comments" });
+app.register(inviteRoutes, { prefix: "/api/invites" });
 
 app.get("/", (_, res) => {
   res.send({ message: "Server is running" });

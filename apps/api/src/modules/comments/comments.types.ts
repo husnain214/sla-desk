@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-export const createCommentSchema = z.object({
-  body: z.string(),
-  isInternal: z.boolean(),
-});
-
-export type CreateCommentPayload = z.infer<typeof createCommentSchema>;
+export { createTicketSchema, type CreateTicketPayload } from "@myapp/shared";
 
 export const ticketParamsSchema = z.object({
   ticketId: z.string(),

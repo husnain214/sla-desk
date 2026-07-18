@@ -4,6 +4,7 @@ import Providers from "@/providers";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -31,9 +32,12 @@ export default function RootLayout({
       lang="en"
       className={cn(display.variable, body.variable, mono.variable)}
     >
-      <Providers>
-        <body className="min-h-full flex flex-col">{children}</body>
-      </Providers>
+      <body>
+        <Providers>
+          <div className="min-h-full flex flex-col">{children}</div>
+        </Providers>
+        <Toaster richColors />
+      </body>
     </html>
   );
 }

@@ -1,15 +1,6 @@
-import { z } from "zod";
-
-export const createInviteSchema = z.object({
-  email: z.email(),
-  role: z.literal("agent"),
-});
-
-export const acceptInviteSchema = z.object({
-  token: z.string().min(1),
-  name: z.string().min(1),
-  password: z.string().min(8),
-});
-
-export type CreateInvitePayload = z.infer<typeof createInviteSchema>;
-export type AcceptInvitePayload = z.infer<typeof acceptInviteSchema>;
+export {
+  createInviteSchema,
+  acceptInviteSchema,
+  type CreateInvitePayload,
+  type AcceptInvitePayload,
+} from "@myapp/shared";

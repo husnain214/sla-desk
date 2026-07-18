@@ -8,22 +8,12 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { TICKET_PRIORITIES, TICKET_STATUSES } from "@myapp/shared";
 import { users } from "./users.schema";
 import { teams } from "./teams.schema";
 
-export const ticketPriorityEnum = pgEnum("ticket_priority", [
-  "low",
-  "medium",
-  "high",
-  "urgent",
-]);
-
-export const ticketStatusEnum = pgEnum("ticket_status", [
-  "open",
-  "pending",
-  "resolved",
-  "closed",
-]);
+export const ticketPriorityEnum = pgEnum("ticket_priority", TICKET_PRIORITIES);
+export const ticketStatusEnum = pgEnum("ticket_status", TICKET_STATUSES);
 
 const tsvector = customType<{ data: string }>({
   dataType() {
