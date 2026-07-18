@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { signupFormSchema, SignupFormValues } from "@/features/auth/auth.types";
-import { useSignupMutation } from "@/features/auth/hooks";
+import { useSignup } from "@/features/auth/hooks";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 export default function Signup() {
   const router = useRouter();
-  const form = useForm<z.infer<typeof signupFormSchema>>({
+  const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
       name: "",
@@ -31,7 +31,7 @@ export default function Signup() {
     },
   });
 
-  const { isPending, mutate: signupMutate } = useSignupMutation();
+  const { isPending, mutate: signupMutate } = useSignup();
 
   function submit({ name, email, password }: SignupFormValues) {
     const payload = { name, email, password };

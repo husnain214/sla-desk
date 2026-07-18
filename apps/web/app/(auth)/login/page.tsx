@@ -4,11 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginSchema, LoginPayload } from "@myapp/shared";
-import { useLoginMutation } from "@/features/auth/hooks";
+import { useLogin } from "@/features/auth/hooks";
 
 import {
   Field,
@@ -21,7 +20,7 @@ import { Input } from "@/components/ui/input";
 
 export default function Login() {
   const router = useRouter();
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -29,7 +28,7 @@ export default function Login() {
     },
   });
 
-  const { isPending, mutate: loginMutate } = useLoginMutation();
+  const { isPending, mutate: loginMutate } = useLogin();
 
   function submit(values: LoginPayload) {
     loginMutate(values, {

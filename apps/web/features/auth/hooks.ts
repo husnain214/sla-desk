@@ -1,10 +1,44 @@
-import { useMutation } from "@tanstack/react-query";
-import { login, signup } from "./api";
+"use client";
 
-export function useSignupMutation() {
-  return useMutation({ mutationKey: ["signup"], mutationFn: signup });
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
+import * as authApi from "./api";
+
+export function useAuth() {
+  const { data: user, isLoading } = useQuery({
+    queryKey: queryKeys.auth.me,
+    queryFn: authApi.getMe,
+    retry: false,
+  });
+
+  return { user, isLoading };
 }
 
-export function useLoginMutation() {
-  return useMutation({ mutationKey: ["login"], mutationFn: login });
+export function useLogin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authApi.login,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+    },
+  });
+}
+
+export function useSignup() {
+  return useMutation({
+    mutationFn: authApi.signup,
+  });
+}
+
+export function useLogout() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      queryClient.setQueryData(queryKeys.auth.me, null);
+      // queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+    },
+  });
 }
