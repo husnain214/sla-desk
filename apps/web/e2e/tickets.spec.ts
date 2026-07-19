@@ -9,12 +9,15 @@ async function signupAndLogin(
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill(TEST_PASSWORD);
+  await page.getByLabel("Confirm Password").fill(TEST_PASSWORD);
   await page.getByRole("button", { name: "Sign up" }).click();
 
+  await page.waitForURL("/login");
+
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(TEST_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(TEST_PASSWORD);
   await page.getByRole("button", { name: "Log in" }).click();
-  await expect(page).toHaveURL("/tickets");
+  await expect(page).toHaveURL("/");
 }
 
 test("customer can create a ticket and see it in the list", async ({

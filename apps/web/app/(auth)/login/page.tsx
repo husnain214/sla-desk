@@ -95,7 +95,7 @@ export default function Login() {
               />
 
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Signing in..." : "Sign in"}
+                {isPending ? "Signing in..." : "Log in"}
               </Button>
             </FieldGroup>
           </form>

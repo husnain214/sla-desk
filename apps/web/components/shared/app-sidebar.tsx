@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -28,11 +28,12 @@ export function AppSidebar() {
   const user = useCurrentUser();
   const logoutMutation = useLogout();
   const router = useRouter();
+  const pathname = usePathname();
 
   const isAgentOrAdmin = user?.role === "agent" || user?.role === "admin";
   const isAdmin = user?.role === "admin";
 
-  const initials = getInitials(user?.name);
+  const initials = getInitials(user?.name || "");
 
   function handleLogout() {
     logoutMutation.mutate(undefined, {
@@ -52,6 +53,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              isActive={pathname === "/"}
               render={
                 <Link href="/">
                   <Ticket className="size-4" />
@@ -64,6 +66,7 @@ export function AppSidebar() {
           {isAgentOrAdmin && (
             <SidebarMenuItem>
               <SidebarMenuButton
+                isActive={pathname === "/teams"}
                 render={
                   <Link href="/teams">
                     <Users className="size-4" />
@@ -77,6 +80,7 @@ export function AppSidebar() {
           {isAdmin && (
             <SidebarMenuItem>
               <SidebarMenuButton
+                isActive={pathname === "/invites"}
                 render={
                   <Link href="/invites">
                     <Mail className="size-4" />
@@ -89,6 +93,7 @@ export function AppSidebar() {
 
           <SidebarMenuItem>
             <SidebarMenuButton
+              isActive={pathname === "/settings"}
               render={
                 <Link href="/settings">
                   <Settings className="size-4" />

@@ -18,6 +18,5 @@ export function AuthProvider({
 
 export function useCurrentUser() {
   const user = useContext(AuthContext);
-  if (!user) throw new Error("useCurrentUser must be used within AuthProvider");
   return user;
 }

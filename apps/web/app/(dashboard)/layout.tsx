@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth/hooks";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/providers/auth-provider";
 import { SocketProvider } from "@/providers/socket-provider";
+import { useAuth } from "@/features/auth/hooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DashboardLayout({
   children,
@@ -15,16 +16,18 @@ export default function DashboardLayout({
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="size-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
       </div>
     );
-  }
-
-  if (!user) {
-    return router.push("/login");
   }
 
   return (
