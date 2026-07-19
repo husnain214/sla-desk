@@ -41,6 +41,23 @@ export const assignTicketSchema = z
     message: "Must provide either assignedAgentId or assignedTeamId",
   });
 
+export const ticketSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  description: z.string().nullable(),
+  category: z.string().nullable(),
+  priority: z.enum(TICKET_PRIORITIES),
+  status: z.enum(TICKET_STATUSES),
+  customerId: z.uuid(),
+  assignedAgentId: z.uuid().nullable(),
+  assignedTeamId: z.uuid().nullable(),
+  slaBreached: z.boolean(),
+  slaDueAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type Ticket = z.infer<typeof ticketSchema>;
 export type AssignTicketPayload = z.infer<typeof assignTicketSchema>;
 export type CreateTicketPayload = z.infer<typeof createTicketSchema>;
 export type TicketFiltersPayload = z.infer<typeof ticketFiltersSchema>;

@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-const ALLOWED_MIME_TYPES = [
+export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+
+export const ALLOWED_MIME_TYPES = [
   "image/png",
   "image/jpeg",
   "application/pdf",
   "text/plain",
 ] as const;
-
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
 export const requestUploadUrlSchema = z.object({
   fileName: z.string().min(1).max(255),

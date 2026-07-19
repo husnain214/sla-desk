@@ -53,7 +53,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               render={
-                <Link href="/tickets">
+                <Link href="/">
                   <Ticket className="size-4" />
                   <span>Tickets</span>
                 </Link>
