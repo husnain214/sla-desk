@@ -4,7 +4,7 @@ import { JwtPayload } from "../auth/auth.types";
 import { AcceptInvitePayload, CreateInvitePayload } from "./invites.type";
 
 import * as inviteRepository from "./invites.repository";
-import * as authRepository from "../auth/auth.repository";
+import * as userRepository from "../users/users.repository";
 
 import { AppError } from "../../shared/errors/app-error";
 import { hashPassword } from "../../shared/utils/auth";
@@ -44,7 +44,7 @@ export async function acceptInvite(payload: AcceptInvitePayload) {
 
   const passwordHash = await hashPassword(payload.password);
 
-  const user = await authRepository.createUser({
+  const user = await userRepository.createUser({
     name: payload.name,
     email: invite.email,
     passwordHash,

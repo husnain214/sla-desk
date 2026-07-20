@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "../../db";
 import { ticketStatusHistory } from "../../db/schemas/ticket-status-history.schema";
 import { DbOrTransaction } from "../../types";
+import { users } from "../../db/schemas/users.schema";
 
 type NewHistoryEntry = typeof ticketStatusHistory.$inferInsert;
 
@@ -15,8 +16,18 @@ export async function insertHistoryEntry(
 
 export async function findHistoryForTicket(ticketId: string) {
   return db
-    .select()
+    .select({
+      id: ticketStatusHistory.id,
+      fromStatus: ticketStatusHistory.fromStatus,
+      toStatus: ticketStatusHistory.toStatus,
+      createdAt: ticketStatusHistory.createdAt,
+      changedBy: {
+        id: users.id,
+        name: users.name,
+      },
+    })
     .from(ticketStatusHistory)
+    .leftJoin(users, eq(users.id, ticketStatusHistory.changedBy))
     .where(eq(ticketStatusHistory.ticketId, ticketId))
     .orderBy(desc(ticketStatusHistory.createdAt));
 }

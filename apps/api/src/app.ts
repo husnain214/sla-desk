@@ -18,6 +18,7 @@ import { ticketRoutes } from "./modules/tickets/tickets.routes";
 import { commentRoutes } from "./modules/comments/comments.routes";
 import { redisRateLimiter } from "./shared/utils/redis-rate-limiter";
 import { inviteRoutes } from "./modules/invites/invites.routes";
+import userRoutes from "./modules/users/users.routes";
 
 export const app = Fastify({
   logger: true,
@@ -29,6 +30,7 @@ app.setSerializerCompiler(serializerCompiler);
 app.register(fastifyCors, {
   origin: env.FRONTEND_URL,
   credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 });
 
 app.register(fastifyCookie);
@@ -58,6 +60,7 @@ app.register(errorHandler);
 await app.register(redisRateLimiter);
 
 app.register(authRoutes, { prefix: "/api/auth" });
+app.register(userRoutes, { prefix: "/api/users" });
 app.register(ticketRoutes, { prefix: "/api/tickets" });
 app.register(commentRoutes, { prefix: "/api/tickets/:ticketId/comments" });
 app.register(inviteRoutes, { prefix: "/api/invites" });

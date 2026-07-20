@@ -32,14 +32,13 @@ export const updateTicketStatusSchema = z.object({
   status: z.enum(TICKET_STATUSES),
 });
 
-export const assignTicketSchema = z
-  .object({
-    assignedAgentId: z.uuid().optional(),
-    assignedTeamId: z.uuid().optional(),
-  })
-  .refine((data) => data.assignedAgentId || data.assignedTeamId, {
-    message: "Must provide either assignedAgentId or assignedTeamId",
-  });
+export const assignTicketSchema = z.object({
+  assignedAgentId: z.string().optional(),
+  assignedTeamId: z.string().optional(),
+});
+// .refine((data) => data.assignedAgentId || data.assignedTeamId, {
+//   message: "Must provide either assignedAgentId or assignedTeamId",
+// });
 
 export const ticketSchema = z.object({
   id: z.uuid(),

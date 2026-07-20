@@ -21,41 +21,44 @@ export async function findTicketById(
   id: string,
   includeInternalComments: boolean,
 ) {
-  const rows = await db
-    .select({
-      ticket: tickets,
+  const ticket = await db.query.tickets.findFirst({
+    columns: { searchVector: false },
+    where: { id },
+    with: {
       customer: {
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role,
+        columns: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       },
-      comments: sql`COALESCE(
-        (
-          SELECT json_agg(c) FROM comments c 
-          WHERE c.ticket_id = ${tickets.id} 
-            AND c.deleted_at IS NULL
-            ${includeInternalComments ? sql`` : sql`AND c.is_internal = false`}
-        ), '[]')`,
-      attachments: sql`COALESCE(
-        (
-          SELECT json_agg(a) FROM attachments a
-          WHERE a.ticket_id = ${tickets.id}
-        ), '[]')`,
-    })
-    .from(tickets)
-    .leftJoin(users, eq(users.id, tickets.customerId))
-    .where(eq(tickets.id, id));
+      assignedAgent: {
+        columns: {
+          id: true,
+          name: true,
+        },
+      },
+      comments: {
+        ...(!includeInternalComments && { where: { isInternal: false } }),
+        with: {
+          author: {
+            columns: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      attachments: true,
+    },
+  });
 
-  if (rows.length === 0) return null;
+  if (!ticket) return null;
 
-  const { ticket, customer, comments: commentList } = rows[0];
-
-  return {
-    ...ticket,
-    customer,
-    comments: commentList,
-  };
+  // const { ticket, customer, assignedAgent, comments, attachments } = rows[0];
+  return ticket;
 }
 
 export async function findTicketsForCustomer(customerId: string) {

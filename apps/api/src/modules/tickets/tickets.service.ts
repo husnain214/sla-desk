@@ -64,10 +64,6 @@ export async function assignTicket(
   payload: AssignTicketPayload,
   requestingUser: JwtPayload,
 ) {
-  if (requestingUser.role === "customer") {
-    throw new AppError("Not allowed to assign tickets", 403);
-  }
-
   const ticket = await ticketService.getTicketById(ticketId, requestingUser);
 
   if (requestingUser.role === "agent") {

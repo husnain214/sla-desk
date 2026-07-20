@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useCreateComment } from "@/features/comments/hooks";
 import { toast } from "sonner";
+import { useCreateComment } from "@/features/comments/hooks";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";

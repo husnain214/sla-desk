@@ -45,7 +45,7 @@ export const relations = defineRelations(
         from: r.tickets.customerId,
         to: r.users.id,
       }),
-      agent: r.one.users({
+      assignedAgent: r.one.users({
         from: r.tickets.assignedAgentId,
         to: r.users.id,
       }),

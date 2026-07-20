@@ -1,7 +1,7 @@
 import type { AppInstance } from "../../types";
 
 import { z } from "zod";
-import { authenticate } from "../auth/auth.middleware";
+import { authenticate, requireRole } from "../auth/auth.middleware";
 
 import * as ticketService from "./tickets.service";
 import * as ticketStatusHistoryService from "./ticket-status-history.service";
@@ -89,10 +89,11 @@ export async function ticketRoutes(fastify: AppInstance) {
   fastify.patch(
     "/:id/assign",
     {
-      preHandler: [authenticate],
+      preHandler: [authenticate, requireRole(["agent", "admin"])],
       schema: {
         params: z.object({ id: z.string() }),
         body: assignTicketSchema,
+        tags: ["Tickets"],
       },
     },
     async (request, reply) => {
@@ -109,7 +110,7 @@ export async function ticketRoutes(fastify: AppInstance) {
     "/:id/history",
     {
       preHandler: [authenticate],
-      schema: { params: z.object({ id: z.string() }) },
+      schema: { params: z.object({ id: z.string() }), tags: ["Tickets"] },
     },
     async (request, reply) => {
       const history = await ticketStatusHistoryService.getTicketHistory(

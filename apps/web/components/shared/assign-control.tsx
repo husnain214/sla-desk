@@ -4,6 +4,14 @@ import { toast } from "sonner";
 import { useAssignTicket } from "@/features/tickets/hooks";
 import { useAuth } from "@/features/auth/hooks";
 import { Button } from "@/components/ui/button";
+import { useAgents } from "@/features/users/hooks";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface AssignControlProps {
   ticketId: string;
@@ -17,10 +25,12 @@ export function AssignControl({
   assignedAgentName,
 }: AssignControlProps) {
   const { user } = useAuth();
+  const { data: agents } = useAgents();
   const mutation = useAssignTicket(ticketId);
 
   const isUnassigned = !assignedAgentId;
   const isAgent = user?.role === "agent";
+  const isAdmin = user?.role === "admin";
 
   function handleClaim() {
     if (!user) return;
@@ -49,6 +59,33 @@ export function AssignControl({
       >
         {mutation.isPending ? "Claiming..." : "Claim ticket"}
       </Button>
+    );
+  }
+
+  if (isAdmin) {
+    return (
+      <Select
+        value={assignedAgentId ?? undefined}
+        onValueChange={(agentId) => {
+          if (agentId) {
+            mutation.mutate(
+              { assignedAgentId: agentId },
+              { onError: (e) => toast.error(e.message) },
+            );
+          }
+        }}
+      >
+        <SelectTrigger className="w-48">
+          <SelectValue placeholder="Assign to agent..." />
+        </SelectTrigger>
+        <SelectContent>
+          {agents?.map((agent) => (
+            <SelectItem key={agent.id} value={agent.id}>
+              {agent.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 

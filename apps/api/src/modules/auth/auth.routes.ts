@@ -2,7 +2,7 @@ import type { AppInstance } from "../../types";
 import { authenticate } from "./auth.middleware";
 import { loginSchema, signupSchema } from "./auth.types";
 import { loginUser, signupUser } from "./auth.service";
-import * as authRepository from "./auth.repository";
+import * as userRepository from "../users/users.repository";
 import { env } from "../../config/env";
 
 export async function authRoutes(fastify: AppInstance) {
@@ -41,7 +41,7 @@ export async function authRoutes(fastify: AppInstance) {
     "/me",
     { schema: { tags: ["Auth"] }, preHandler: [authenticate] },
     async (request, reply) => {
-      const user = await authRepository.findUserById(request.user.userId);
+      const user = await userRepository.findUserById(request.user.userId);
       if (!user) {
         return reply.code(401).send({ error: "User not found" });
       }
@@ -50,7 +50,7 @@ export async function authRoutes(fastify: AppInstance) {
     },
   );
 
-  fastify.post("/logout", async (_, reply) => {
+  fastify.post("/logout", { schema: { tags: ["Auth"] } }, async (_, reply) => {
     reply.clearCookie("token", { path: "/" });
     reply.send({ success: true });
   });

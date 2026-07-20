@@ -1,12 +1,12 @@
 import type { SignupPayload, LoginPayload } from "./auth.types";
 
-import * as authRepository from "./auth.repository";
+import * as userRepository from "../users/users.repository";
 
 import { comparePassword, hashPassword } from "../../shared/utils/auth";
 import { AppError } from "../../shared/errors/app-error";
 
 export async function signupUser(payload: SignupPayload) {
-  const existingUser = await authRepository.findUserByEmail(payload.email);
+  const existingUser = await userRepository.findUserByEmail(payload.email);
 
   if (existingUser) {
     throw new AppError("An account with this email already exists", 409);
@@ -14,7 +14,7 @@ export async function signupUser(payload: SignupPayload) {
 
   const hashedPassword = await hashPassword(payload.password);
 
-  const user = await authRepository.createUser({
+  const user = await userRepository.createUser({
     name: payload.name,
     email: payload.email,
     passwordHash: hashedPassword,
@@ -26,7 +26,7 @@ export async function signupUser(payload: SignupPayload) {
 }
 
 export async function loginUser(payload: LoginPayload) {
-  const user = await authRepository.findUserByEmail(payload.email);
+  const user = await userRepository.findUserByEmail(payload.email);
 
   if (!user) {
     throw new AppError("Invalid credentials", 401);
