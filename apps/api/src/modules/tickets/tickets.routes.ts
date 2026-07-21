@@ -4,6 +4,7 @@ import { z } from "zod";
 import { authenticate, requireRole } from "../auth/auth.middleware";
 
 import * as ticketService from "./tickets.service";
+import * as tagService from "../tags/tags.service";
 import * as ticketStatusHistoryService from "./ticket-status-history.service";
 
 import {
@@ -12,6 +13,7 @@ import {
   updateTicketStatusSchema,
   assignTicketSchema,
 } from "./tickets.types";
+import { tagParamsSchema } from "@myapp/shared";
 
 export async function ticketRoutes(fastify: AppInstance) {
   fastify.post(
@@ -118,6 +120,38 @@ export async function ticketRoutes(fastify: AppInstance) {
         request.user,
       );
       reply.send(history);
+    },
+  );
+
+  fastify.post(
+    "/:id/tags/:tagId",
+    {
+      preHandler: [authenticate, requireRole(["admin", "agent"])],
+      schema: { params: tagParamsSchema },
+    },
+    async (request, reply) => {
+      await tagService.tagTicket(
+        request.params.id,
+        request.params.tagId,
+        request.user,
+      );
+      reply.code(204).send();
+    },
+  );
+
+  fastify.delete(
+    "/:id/tags/:tagId",
+    {
+      preHandler: [authenticate, requireRole(["admin", "agent"])],
+      schema: { params: tagParamsSchema },
+    },
+    async (request, reply) => {
+      await tagService.untagTicket(
+        request.params.id,
+        request.params.tagId,
+        request.user,
+      );
+      reply.code(204).send();
     },
   );
 }

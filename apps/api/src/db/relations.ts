@@ -6,6 +6,7 @@ import { comments } from "./schemas/comments.schema";
 import { attachments } from "./schemas/attatchments.schema";
 import { ticketStatusHistory } from "./schemas/ticket-status-history.schema";
 import { tags, ticketTags } from "./schemas/tags.schema";
+import { cannedReplies } from "./schemas/canned-replies.schema";
 
 export const relations = defineRelations(
   {
@@ -17,6 +18,7 @@ export const relations = defineRelations(
     ticketStatusHistory,
     tags,
     ticketTags,
+    cannedReplies,
   },
   (r) => ({
     users: {
@@ -33,6 +35,7 @@ export const relations = defineRelations(
         to: r.tickets.assignedAgentId,
       }),
       comments: r.many.comments(),
+      cannedReplies: r.many.cannedReplies(),
     },
 
     teams: {
@@ -91,6 +94,13 @@ export const relations = defineRelations(
       tickets: r.many.tickets({
         from: r.tags.id.through(r.ticketTags.tagId),
         to: r.tickets.id.through(r.ticketTags.ticketId),
+      }),
+    },
+
+    cannedReplies: {
+      createdBy: r.one.users({
+        from: r.cannedReplies.createdById,
+        to: r.users.id,
       }),
     },
   }),

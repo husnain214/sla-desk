@@ -1,10 +1,10 @@
-import { snakeCase, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { snakeCase } from "drizzle-orm/pg-core";
+import { uuid, varchar } from "drizzle-orm/pg-core";
 import { tickets } from "./tickets.schema";
 
 export const tags = snakeCase.table("tags", {
   id: uuid().defaultRandom().primaryKey(),
-  name: varchar({ length: 255 }).notNull(),
-  createdAt: timestamp().notNull().defaultNow(),
+  name: varchar({ length: 50 }).notNull().unique(),
 });
 
 export const ticketTags = snakeCase.table("ticket_tags", {

@@ -3,17 +3,19 @@
 import { useParams } from "next/navigation";
 import { useTicket } from "@/features/tickets/hooks";
 import { useAuth } from "@/features/auth/hooks";
+import { formatTimeRemaining } from "@/lib/utils";
+
+import { useTicketRoom } from "@/features/tickets/use-ticket-room";
 import { StatusSelect } from "@/components/shared/status-select";
 import { AssignControl } from "@/components/shared/assign-control";
 import { CommentThread } from "@/components/shared/comment-thread";
 import { CommentComposer } from "@/components/shared/comment-composer";
 import { SlaPill } from "@/components/shared/sla-pill";
 import { Separator } from "@/components/ui/separator";
-import { formatTimeRemaining } from "@/lib/utils";
 import { AttachmentList } from "@/components/shared/attachment-list";
 import { TicketTimelineSection } from "@/components/shared/ticket-timeline-section";
-import { useTicketRoom } from "@/features/tickets/use-ticket-room";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TicketTags } from "@/components/shared/ticket-tags";
 
 export default function TicketDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -63,6 +65,7 @@ export default function TicketDetailPage() {
         {ticket.description && (
           <p className="text-sm text-muted-foreground">{ticket.description}</p>
         )}
+        <TicketTags ticketId={ticket.id} tags={ticket.tags ?? []} />{" "}
       </div>
 
       <div className="flex items-center gap-6 rounded-lg border border-border bg-card p-4">

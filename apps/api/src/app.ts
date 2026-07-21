@@ -18,8 +18,10 @@ import { ticketRoutes } from "./modules/tickets/tickets.routes";
 import { commentRoutes } from "./modules/comments/comments.routes";
 import { redisRateLimiter } from "./shared/utils/redis-rate-limiter";
 import { inviteRoutes } from "./modules/invites/invites.routes";
-import userRoutes from "./modules/users/users.routes";
+import { userRoutes } from "./modules/users/users.routes";
 import { teamRoutes } from "./modules/teams/teams.routes";
+import { tagRoutes } from "./modules/tags/tags.routes";
+import { cannedReplyRoutes } from "./modules/canned-replies/canned-replies.routes";
 
 export const app = Fastify({
   logger: true,
@@ -66,6 +68,8 @@ app.register(ticketRoutes, { prefix: "/api/tickets" });
 app.register(commentRoutes, { prefix: "/api/tickets/:ticketId/comments" });
 app.register(inviteRoutes, { prefix: "/api/invites" });
 app.register(teamRoutes, { prefix: "/api/teams" });
+app.register(tagRoutes, { prefix: "/api/tags" });
+app.register(cannedReplyRoutes, { prefix: "/api/canned-replies" });
 
 app.get("/", (_, res) => {
   res.send({ message: "Server is running" });

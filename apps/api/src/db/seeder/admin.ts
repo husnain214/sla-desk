@@ -1,18 +1,19 @@
-import { db } from "../db";
-import { users } from "../db/schemas/users.schema";
-import { hashPassword } from "../shared/utils/auth";
+import { db } from "..";
+import { env } from "../../config/env";
+import { hashPassword } from "../../shared/utils/auth";
+import { users } from "../schemas/users.schema";
 
-const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@sladesk.com";
-const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "admin12345";
+const ADMIN_EMAIL = env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = env.ADMIN_PASSWORD;
 
-async function seedAdmin() {
+export async function seedAdmin() {
   const existing = await db.query.users.findFirst({
     where: { email: ADMIN_EMAIL },
   });
 
   if (existing) {
     console.log(`Admin already exists: ${ADMIN_EMAIL} — skipping.`);
-    process.exit(0);
+    return;
   }
 
   const passwordHash = await hashPassword(ADMIN_PASSWORD);
@@ -28,10 +29,4 @@ async function seedAdmin() {
     .returning();
 
   console.log("Seeded admin:", { id: admin.id, email: admin.email });
-  process.exit(0);
 }
-
-seedAdmin().catch((err) => {
-  console.error("Admin seed failed:", err);
-  process.exit(1);
-});

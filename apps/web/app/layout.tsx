@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/providers/query-provider";
+import { NuqsAdapter as NuqsProvider } from "nuqs/adapters/next/app";
 
 import { cn } from "@/lib/utils";
 
@@ -38,13 +39,15 @@ export default function RootLayout({
       className={cn(display.variable, body.variable, mono.variable)}
     >
       <body>
-        <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TooltipProvider>
-              <div className="min-h-full flex flex-col">{children}</div>
-            </TooltipProvider>
-          </ThemeProvider>
-        </QueryProvider>
+        <NuqsProvider>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <TooltipProvider>
+                <div className="min-h-full flex flex-col">{children}</div>
+              </TooltipProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </NuqsProvider>
 
         <Toaster richColors />
       </body>

@@ -4,7 +4,7 @@ import { authenticate, requireRole } from "../auth/auth.middleware";
 import * as userRepository from "./users.repository";
 import * as userService from "./users.service";
 
-export default function userRoutes(fastify: AppInstance) {
+export function userRoutes(fastify: AppInstance) {
   fastify.get(
     "/agents",
     {

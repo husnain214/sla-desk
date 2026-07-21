@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useState } from "react";
 
 interface AssignControlProps {
   ticketId: string;

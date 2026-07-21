@@ -1,7 +1,4 @@
-import type { TicketFiltersPayload } from "@myapp/shared";
-import { useEffect, useState } from "react";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
-
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,32 +8,33 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { TICKET_STATUSES, TICKET_PRIORITIES } from "@myapp/shared";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
-type Filters = Partial<TicketFiltersPayload>;
-
-interface TicketFiltersProps {
-  filters: Filters;
-  onFiltersChange: (filters: Filters) => void;
-}
+type FilterState = {
+  search: string;
+  status: (typeof TICKET_STATUSES)[number] | null;
+  priority: (typeof TICKET_PRIORITIES)[number] | null;
+  page: number;
+};
 
 export function TicketFilters({
   filters,
   onFiltersChange,
-}: TicketFiltersProps) {
-  const [searchInput, setSearchInput] = useState(filters.search ?? "");
+}: {
+  filters: FilterState;
+  onFiltersChange: (patch: Partial<FilterState>) => void;
+}) {
+  const [searchInput, setSearchInput] = useState(filters.search);
   const debouncedSearch = useDebouncedValue(searchInput, 400);
 
   useEffect(() => {
-    onFiltersChange({ ...filters, search: debouncedSearch || undefined });
+    onFiltersChange({ search: debouncedSearch, page: 1 }); // reset to page 1 on new search
   }, [debouncedSearch]);
-
-  function update(patch: Partial<Filters>) {
-    onFiltersChange({ ...filters, ...patch });
-  }
 
   function clear() {
     setSearchInput("");
-    onFiltersChange({});
+    onFiltersChange({ search: "", status: null, priority: null, page: 1 });
   }
 
   return (
@@ -50,12 +48,10 @@ export function TicketFilters({
 
       <Select
         value={filters.status ?? "all"}
-        onValueChange={(value) =>
-          update({
-            status:
-              value === "all"
-                ? undefined
-                : (value as TicketFiltersPayload["status"]),
+        onValueChange={(v) =>
+          onFiltersChange({
+            status: v === "all" ? null : (v as FilterState["status"]),
+            page: 1,
           })
         }
       >
@@ -64,21 +60,20 @@ export function TicketFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All statuses</SelectItem>
-          <SelectItem value="open">Open</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="resolved">Resolved</SelectItem>
-          <SelectItem value="closed">Closed</SelectItem>
+          {TICKET_STATUSES.map((s) => (
+            <SelectItem key={s} value={s} className="capitalize">
+              {s}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
       <Select
         value={filters.priority ?? "all"}
-        onValueChange={(value) =>
-          update({
-            priority:
-              value === "all"
-                ? undefined
-                : (value as TicketFiltersPayload["priority"]),
+        onValueChange={(v) =>
+          onFiltersChange({
+            priority: v === "all" ? null : (v as FilterState["priority"]),
+            page: 1,
           })
         }
       >
@@ -87,10 +82,11 @@ export function TicketFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All priorities</SelectItem>
-          <SelectItem value="urgent">Urgent</SelectItem>
-          <SelectItem value="high">High</SelectItem>
-          <SelectItem value="medium">Medium</SelectItem>
-          <SelectItem value="low">Low</SelectItem>
+          {TICKET_PRIORITIES.map((p) => (
+            <SelectItem key={p} value={p} className="capitalize">
+              {p}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 

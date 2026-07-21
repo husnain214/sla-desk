@@ -1,8 +1,18 @@
 "use client";
 
-import type { Ticket, TicketFiltersPayload } from "@myapp/shared";
+import {
+  TICKET_PRIORITIES,
+  TICKET_STATUSES,
+  type Ticket,
+  type TicketFiltersPayload,
+} from "@myapp/shared";
 
-import { useState } from "react";
+import {
+  useQueryStates,
+  parseAsString,
+  parseAsStringEnum,
+  parseAsInteger,
+} from "nuqs";
 import { useTickets } from "@/features/tickets/hooks";
 
 import { CreateTicketDialog } from "@/components/shared/create-ticket-dialog";
@@ -12,8 +22,21 @@ import { TicketRowSkeleton } from "@/components/shared/ticket-row-skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
 
 export default function Dashboard() {
-  const [filters, setFilters] = useState<Partial<TicketFiltersPayload>>({});
-  const { data: tickets, isLoading } = useTickets(filters);
+  const [filters, setFilters] = useQueryStates({
+    search: parseAsString.withDefault(""),
+    status: parseAsStringEnum([...TICKET_STATUSES]),
+    priority: parseAsStringEnum([...TICKET_PRIORITIES]),
+    page: parseAsInteger.withDefault(1),
+  });
+
+  const apiFilters = {
+    ...filters,
+    search: filters.search || undefined,
+    status: filters.status ?? undefined,
+    priority: filters.priority ?? undefined,
+  };
+
+  const { data: tickets, isLoading } = useTickets(apiFilters);
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getColumns, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { tickets } from "../../db/schemas/tickets.schema";
 import { NewTicket, TicketFiltersPayload } from "./tickets.types";
@@ -50,12 +50,12 @@ export async function findTicketById(
         },
       },
       attachments: true,
+      tags: true,
     },
   });
 
   if (!ticket) return null;
 
-  // const { ticket, customer, assignedAgent, comments, attachments } = rows[0];
   return ticket;
 }
 
@@ -102,7 +102,18 @@ export async function findAllTickets(filters: TicketFiltersPayload) {
     : sortFn(tickets[filters.sortBy]);
 
   return db
-    .select()
+    .select({
+      ...getColumns(tickets),
+      tags: sql<{ id: string; name: string }[]>`
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', t.id, 'name', t.name))
+           FROM ticket_tags tt
+           JOIN tags t ON t.id = tt.tag_id
+           WHERE tt.ticket_id = ${tickets.id}),
+          '[]'
+        )
+      `,
+    })
     .from(tickets)
     .where(and(...conditions))
     .orderBy(orderByClause)

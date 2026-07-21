@@ -135,12 +135,17 @@ export function CreateTicketDialog() {
             />
 
             <Controller
-              name="category"
+              name="priority"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="category">Category</FieldLabel>
-                  <Select defaultValue={field.value}>
+                  <FieldLabel htmlFor="priority">Priority</FieldLabel>
+                  <Select
+                    defaultValue={field.value}
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="low, medium, etc." />
                     </SelectTrigger>
