@@ -3,3 +3,4 @@ export * from "./tickets.schemas";
 export * from "./comments.schemas";
 export * from "./invites.schemas";
 export * from "./attachments.schemas";
+export * from "./teams.schemas";

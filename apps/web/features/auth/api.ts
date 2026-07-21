@@ -1,5 +1,10 @@
 import { api } from "@/lib/axios";
-import { LoginPayload, SignupPayload } from "@myapp/shared";
+import {
+  ChangePasswordPayload,
+  LoginPayload,
+  SignupPayload,
+  UpdateProfilePayload,
+} from "@myapp/shared";
 
 export async function signup(signupPayload: SignupPayload) {
   const response = await api.post("auth/signup", signupPayload);
@@ -19,4 +24,13 @@ export async function logout() {
 export async function getMe() {
   const response = await api.get("auth/me");
   return response.data;
+}
+
+export async function updateProfile(payload: UpdateProfilePayload) {
+  const res = await api.patch("/auth/me", payload);
+  return res.data;
+}
+export async function changePassword(payload: ChangePasswordPayload) {
+  const res = await api.patch("/auth/password", payload);
+  return res.data;
 }

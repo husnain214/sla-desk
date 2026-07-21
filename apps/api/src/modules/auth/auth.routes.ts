@@ -2,8 +2,10 @@ import type { AppInstance } from "../../types";
 import { authenticate } from "./auth.middleware";
 import { loginSchema, signupSchema } from "./auth.types";
 import { loginUser, signupUser } from "./auth.service";
+import * as authService from "./auth.service";
 import * as userRepository from "../users/users.repository";
 import { env } from "../../config/env";
+import { changePasswordSchema, updateProfileSchema } from "@myapp/shared";
 
 export async function authRoutes(fastify: AppInstance) {
   fastify.post(
@@ -47,6 +49,28 @@ export async function authRoutes(fastify: AppInstance) {
       }
       const { passwordHash, ...safeUser } = user;
       reply.send(safeUser);
+    },
+  );
+
+  fastify.patch(
+    "/me",
+    { preHandler: [authenticate], schema: { body: updateProfileSchema } },
+    async (request, reply) => {
+      const user = await authService.updateProfile(
+        request.user.userId,
+        request.body,
+      );
+      const { passwordHash, ...safe } = user;
+      reply.send(safe);
+    },
+  );
+
+  fastify.patch(
+    "/password",
+    { preHandler: [authenticate], schema: { body: changePasswordSchema } },
+    async (request, reply) => {
+      await authService.changePassword(request.user.userId, request.body);
+      reply.send({ success: true });
     },
   );
 

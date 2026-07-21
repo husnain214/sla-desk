@@ -1,8 +1,7 @@
-import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { tickets } from "../../db/schemas/tickets.schema";
 import { NewTicket, TicketFiltersPayload } from "./tickets.types";
-import { users } from "../../db/schemas/users.schema";
 import { DbOrTransaction } from "../../types";
 import { TicketStatus } from "./ticket-state-machine";
 
@@ -22,7 +21,6 @@ export async function findTicketById(
   includeInternalComments: boolean,
 ) {
   const ticket = await db.query.tickets.findFirst({
-    columns: { searchVector: false },
     where: { id },
     with: {
       customer: {
@@ -86,10 +84,15 @@ export async function findAllTickets(filters: TicketFiltersPayload) {
 
   let searchRank;
   if (filters.search) {
+    const matchExpr = sql`(
+    setweight(to_tsvector('english', ${tickets.title}), 'A') ||
+    setweight(to_tsvector('english', coalesce(${tickets.description}, '')), 'B')
+  )`;
+
     conditions.push(
-      sql`${tickets.searchVector} @@ websearch_to_tsquery('english', ${filters.search})`,
+      sql`${matchExpr} @@ websearch_to_tsquery('english', ${filters.search})`,
     );
-    searchRank = sql<number>`ts_rank(${tickets.searchVector}, websearch_to_tsquery('english', ${filters.search}))`;
+    searchRank = sql<number>`ts_rank(${matchExpr}, websearch_to_tsquery('english', ${filters.search}))`;
   }
 
   const sortFn = filters.sortOrder === "asc" ? asc : desc;

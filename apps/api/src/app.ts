@@ -19,6 +19,7 @@ import { commentRoutes } from "./modules/comments/comments.routes";
 import { redisRateLimiter } from "./shared/utils/redis-rate-limiter";
 import { inviteRoutes } from "./modules/invites/invites.routes";
 import userRoutes from "./modules/users/users.routes";
+import { teamRoutes } from "./modules/teams/teams.routes";
 
 export const app = Fastify({
   logger: true,
@@ -64,6 +65,7 @@ app.register(userRoutes, { prefix: "/api/users" });
 app.register(ticketRoutes, { prefix: "/api/tickets" });
 app.register(commentRoutes, { prefix: "/api/tickets/:ticketId/comments" });
 app.register(inviteRoutes, { prefix: "/api/invites" });
+app.register(teamRoutes, { prefix: "/api/teams" });
 
 app.get("/", (_, res) => {
   res.send({ message: "Server is running" });

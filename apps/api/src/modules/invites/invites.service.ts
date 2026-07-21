@@ -23,6 +23,7 @@ export async function createInvite(
     role: payload.role,
     token,
     invitedById: requestingUser.userId,
+    teamId: payload.teamId,
     expiresAt,
   });
 }
@@ -49,6 +50,7 @@ export async function acceptInvite(payload: AcceptInvitePayload) {
     email: invite.email,
     passwordHash,
     role: invite.role,
+    teamId: invite.teamId,
   });
 
   await inviteRepository.markInviteUsed(invite.id);

@@ -28,6 +28,7 @@ CREATE TABLE "invites" (
 	"role" "user_role" NOT NULL,
 	"token" varchar(255) NOT NULL UNIQUE,
 	"invited_by_id" uuid NOT NULL,
+	"team_id" uuid,
 	"expires_at" timestamp NOT NULL,
 	"used_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL
@@ -85,11 +86,16 @@ CREATE TABLE "users" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE INDEX "tickets_search_idx" ON "tickets" USING gin ((
+        setweight(to_tsvector('english', "title"), 'A') ||
+        setweight(to_tsvector('english', coalesce("description", '')), 'B')
+      ));--> statement-breakpoint
 ALTER TABLE "attachments" ADD CONSTRAINT "attachments_ticket_id_tickets_id_fkey" FOREIGN KEY ("ticket_id") REFERENCES "tickets"("id");--> statement-breakpoint
 ALTER TABLE "attachments" ADD CONSTRAINT "attachments_uploaded_by_users_id_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id");--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_ticket_id_tickets_id_fkey" FOREIGN KEY ("ticket_id") REFERENCES "tickets"("id");--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_author_id_users_id_fkey" FOREIGN KEY ("author_id") REFERENCES "users"("id");--> statement-breakpoint
 ALTER TABLE "invites" ADD CONSTRAINT "invites_invited_by_id_users_id_fkey" FOREIGN KEY ("invited_by_id") REFERENCES "users"("id");--> statement-breakpoint
+ALTER TABLE "invites" ADD CONSTRAINT "invites_team_id_teams_id_fkey" FOREIGN KEY ("team_id") REFERENCES "teams"("id");--> statement-breakpoint
 ALTER TABLE "ticket_tags" ADD CONSTRAINT "ticket_tags_ticket_id_tickets_id_fkey" FOREIGN KEY ("ticket_id") REFERENCES "tickets"("id");--> statement-breakpoint
 ALTER TABLE "ticket_tags" ADD CONSTRAINT "ticket_tags_tag_id_tags_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "tags"("id");--> statement-breakpoint
 ALTER TABLE "ticket_status_history" ADD CONSTRAINT "ticket_status_history_ticket_id_tickets_id_fkey" FOREIGN KEY ("ticket_id") REFERENCES "tickets"("id");--> statement-breakpoint

@@ -4,6 +4,7 @@ import * as userRepository from "../users/users.repository";
 
 import { comparePassword, hashPassword } from "../../shared/utils/auth";
 import { AppError } from "../../shared/errors/app-error";
+import { ChangePasswordPayload, UpdateProfilePayload } from "@myapp/shared";
 
 export async function signupUser(payload: SignupPayload) {
   const existingUser = await userRepository.findUserByEmail(payload.email);
@@ -44,4 +45,28 @@ export async function loginUser(payload: LoginPayload) {
   const { passwordHash, ...loginUser } = user;
 
   return loginUser;
+}
+
+export async function updateProfile(
+  userId: string,
+  payload: UpdateProfilePayload,
+) {
+  return userRepository.updateUser(userId, { name: payload.name });
+}
+
+export async function changePassword(
+  userId: string,
+  payload: ChangePasswordPayload,
+) {
+  const user = await userRepository.findUserById(userId);
+  if (!user) throw new AppError("User not found", 404);
+
+  const isValid = await comparePassword(
+    payload.currentPassword,
+    user.passwordHash,
+  );
+  if (!isValid) throw new AppError("Current password is incorrect", 400);
+
+  const newHash = await hashPassword(payload.newPassword);
+  return userRepository.updateUser(userId, { passwordHash: newHash });
 }

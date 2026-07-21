@@ -42,3 +42,14 @@ export function useLogout() {
     },
   });
 }
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.updateProfile,
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.auth.me }),
+  });
+}
+export function useChangePassword() {
+  return useMutation({ mutationFn: authApi.changePassword });
+}

@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
+    "seed:admin": "tsx src/scripts/seed-admin.ts",
     "worker:sla": "tsx watch src/workers/sla-breach.worker.ts",
     "worker:escalation": "tsx watch src/workers/escalation.worker.ts",
     "test": "vitest run",

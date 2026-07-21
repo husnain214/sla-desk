@@ -3,6 +3,7 @@ import { z } from "zod";
 export const createInviteSchema = z.object({
   email: z.email(),
   role: z.literal("agent"),
+  teamId: z.uuid().optional(),
 });
 
 export const acceptInviteSchema = z.object({

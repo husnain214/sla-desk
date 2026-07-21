@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
-import Providers from "@/providers";
-import { cn } from "@/lib/utils";
-
 import "./globals.css";
+
+import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
+
 import { Toaster } from "sonner";
+
+import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryProvider } from "@/providers/query-provider";
+
+import { cn } from "@/lib/utils";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -33,9 +38,14 @@ export default function RootLayout({
       className={cn(display.variable, body.variable, mono.variable)}
     >
       <body>
-        <Providers>
-          <div className="min-h-full flex flex-col">{children}</div>
-        </Providers>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <TooltipProvider>
+              <div className="min-h-full flex flex-col">{children}</div>
+            </TooltipProvider>
+          </ThemeProvider>
+        </QueryProvider>
+
         <Toaster richColors />
       </body>
     </html>
