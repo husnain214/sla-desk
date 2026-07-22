@@ -14,6 +14,6 @@ COPY apps/api apps/api
 
 WORKDIR /app/apps/api
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD ["npx", "tsx", "src/server.ts"]
