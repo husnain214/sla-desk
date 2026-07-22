@@ -30,7 +30,7 @@ export async function authRoutes(fastify: AppInstance) {
       reply.setCookie("token", token, {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
         maxAge: 60 * 60, // 1 hour, matches JWT expiry
       });
