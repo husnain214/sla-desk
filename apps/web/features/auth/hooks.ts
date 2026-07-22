@@ -20,15 +20,7 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (values: LoginPayload) => {
-      const result = await loginServerAction(values);
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
-
-      return result;
-    },
+    mutationFn: authApi.login,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
     },
