@@ -1,3 +1,4 @@
+import { logout } from "@/features/auth/api";
 import axios from "axios";
 
 export const api = axios.create({
@@ -15,8 +16,11 @@ export class ApiError extends Error {
 
 api.interceptors.response.use(
   (res) => res,
-  (error) => {
-    if (error.response?.status === 401) window.location.href = "/login";
+  async (error) => {
+    if (error.response?.status === 401) {
+      await logout();
+      window.location.href = "/login";
+    }
 
     const message = error.response?.data?.error ?? "Something went wrong";
     const status = error.response?.status ?? 500;
