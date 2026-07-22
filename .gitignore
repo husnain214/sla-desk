@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-
+sladesk-ec2.pem
 # Environment variables
 .env
 .env.local
