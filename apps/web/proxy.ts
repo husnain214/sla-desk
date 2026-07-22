@@ -7,9 +7,9 @@ export function proxy(request: NextRequest) {
 
   const isPublicRoute = pathname === "/login" || pathname === "/signup";
 
-  if (isPublicRoute && token) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+  // if (isPublicRoute && token) {
+  //   return NextResponse.redirect(new URL("/", request.url));
+  // }
 
   if (!isPublicRoute && !token) {
     const loginUrl = new URL("/login", request.url);
