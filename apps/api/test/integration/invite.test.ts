@@ -13,7 +13,7 @@ describe("invite flow", () => {
 
     const inviteRes = await app.inject({
       method: "POST",
-      url: "/invites",
+      url: "/api/invites",
       headers: authHeader(adminToken),
       payload: { email: "new-agent@test.com", role: "agent" },
     });
@@ -21,7 +21,7 @@ describe("invite flow", () => {
 
     const acceptRes = await app.inject({
       method: "POST",
-      url: "/invites/accept",
+      url: "/api/invites/accept",
       payload: {
         token: invite.token,
         name: "New Agent",
@@ -38,7 +38,7 @@ describe("invite flow", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: "/invites",
+      url: "/api/invites",
       headers: authHeader(customerToken),
       payload: { email: "attempted-invite@test.com", role: "agent" },
     });
@@ -51,7 +51,7 @@ describe("invite flow", () => {
 
     const inviteRes = await app.inject({
       method: "POST",
-      url: "/invites",
+      url: "/api/invites",
       headers: authHeader(adminToken),
       payload: { email: "reused-invite@test.com", role: "agent" },
     });
@@ -60,7 +60,7 @@ describe("invite flow", () => {
     // first acceptance — should succeed
     const firstAccept = await app.inject({
       method: "POST",
-      url: "/invites/accept",
+      url: "/api/invites/accept",
       payload: {
         token: invite.token,
         name: "First Accept",
@@ -72,7 +72,7 @@ describe("invite flow", () => {
     // second acceptance with the same token — should be rejected
     const secondAccept = await app.inject({
       method: "POST",
-      url: "/invites/accept",
+      url: "/api/invites/accept",
       payload: {
         token: invite.token,
         name: "Second Accept Attempt",
@@ -106,7 +106,7 @@ describe("invite flow", () => {
 
     const acceptRes = await app.inject({
       method: "POST",
-      url: "/invites/accept",
+      url: "/api/invites/accept",
       payload: {
         token: expiredInvite.token,
         name: "Too Late",

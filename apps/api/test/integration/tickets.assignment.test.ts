@@ -16,14 +16,14 @@ describe("ticket assignment RBAC", () => {
     // decode the agent's own userId from the login response or a /auth/me call
     const meRes = await app.inject({
       method: "GET",
-      url: "/auth/me",
+      url: "/api/auth/me",
       headers: authHeader(agentToken),
     });
-    const agentId = meRes.json().userId;
+    const agentId = meRes.json().id;
 
     const res = await app.inject({
       method: "PATCH",
-      url: `/tickets/${ticket.id}/assign`,
+      url: `/api/tickets/${ticket.id}/assign`,
       headers: authHeader(agentToken),
       payload: { assignedAgentId: agentId },
     });
@@ -39,11 +39,34 @@ describe("ticket assignment RBAC", () => {
 
     const res = await app.inject({
       method: "PATCH",
-      url: `/tickets/${ticket.id}/assign`,
+      url: `/api/tickets/${ticket.id}/assign`,
       headers: authHeader(agentToken),
       payload: { assignedAgentId: "00000000-0000-0000-0000-000000000000" }, // some other fake agent id
     });
 
     expect(res.statusCode).toBe(403);
   });
+});
+
+it("admin can assign a ticket to any agent, not just self", async () => {
+  const customerToken = await signupAndLogin("customer-assign-admin@test.com");
+  const ticket = await createTicketAs(customerToken);
+  const adminToken = await login("admin@test.com");
+
+  const meRes = await app.inject({
+    method: "GET",
+    url: "/api/auth/me",
+    headers: authHeader(await login("agent@test.com")),
+  });
+  const agentId = meRes.json().id;
+
+  const res = await app.inject({
+    method: "PATCH",
+    url: `/api/tickets/${ticket.id}/assign`,
+    headers: authHeader(adminToken),
+    payload: { assignedAgentId: agentId },
+  });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.json().assignedAgentId).toBe(agentId);
 });

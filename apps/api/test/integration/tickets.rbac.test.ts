@@ -16,7 +16,7 @@ describe("ticket access RBAC", () => {
 
     const createRes = await app.inject({
       method: "POST",
-      url: "/tickets",
+      url: "/api/tickets",
       headers: authHeader(tokenA),
       payload: { title: "A's ticket", priority: "low" },
     });
@@ -24,7 +24,7 @@ describe("ticket access RBAC", () => {
 
     const viewRes = await app.inject({
       method: "GET",
-      url: `/tickets/${ticket.id}`,
+      url: `/api/tickets/${ticket.id}`,
       headers: authHeader(tokenB),
     });
 

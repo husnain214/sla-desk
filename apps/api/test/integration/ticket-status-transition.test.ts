@@ -15,7 +15,7 @@ describe("ticket status transitions", () => {
 
     const res = await app.inject({
       method: "PATCH",
-      url: `/tickets/${ticket.id}/status`,
+      url: `/api/tickets/${ticket.id}/status`,
       headers: authHeader(agentToken),
       payload: { status: "closed" },
     });
@@ -30,7 +30,7 @@ describe("ticket status transitions", () => {
 
     const res = await app.inject({
       method: "PATCH",
-      url: `/tickets/${ticket.id}/status`,
+      url: `/api/tickets/${ticket.id}/status`,
       headers: authHeader(agentToken),
       payload: { status: "pending" },
     });
@@ -40,7 +40,7 @@ describe("ticket status transitions", () => {
 
     const historyRes = await app.inject({
       method: "GET",
-      url: `/tickets/${ticket.id}/history`,
+      url: `/api/tickets/${ticket.id}/history`,
       headers: authHeader(agentToken),
     });
 

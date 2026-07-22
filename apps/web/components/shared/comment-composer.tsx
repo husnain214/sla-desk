@@ -48,7 +48,6 @@ export function CommentComposer({
       { title, body },
       {
         onSuccess(data) {
-          console.log(data);
           setSelectedReply(data.id);
         },
       },

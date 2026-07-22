@@ -15,7 +15,7 @@ describe("comment isInternal RBAC", () => {
     // customer tries to force isInternal: true — should be silently overridden to false
     const commentRes = await app.inject({
       method: "POST",
-      url: `/tickets/${ticket.id}/comments`,
+      url: `/api/tickets/${ticket.id}/comments`,
       headers: authHeader(customerToken),
       payload: { body: "Trying to sneak an internal note", isInternal: true },
     });
@@ -33,14 +33,14 @@ describe("comment isInternal RBAC", () => {
 
     await app.inject({
       method: "POST",
-      url: `/tickets/${ticket.id}/comments`,
+      url: `/api/tickets/${ticket.id}/comments`,
       headers: authHeader(agentToken),
       payload: { body: "Internal note for the team", isInternal: true },
     });
 
     const publicRes = await app.inject({
       method: "POST",
-      url: `/tickets/${ticket.id}/comments`,
+      url: `/api/tickets/${ticket.id}/comments`,
       headers: authHeader(agentToken),
       payload: { body: "Public reply to customer", isInternal: false },
     });
@@ -48,7 +48,7 @@ describe("comment isInternal RBAC", () => {
     // customer views the ticket — should only see the public comment
     const ticketDetailRes = await app.inject({
       method: "GET",
-      url: `/tickets/${ticket.id}`,
+      url: `/api/tickets/${ticket.id}`,
       headers: authHeader(customerToken),
     });
 

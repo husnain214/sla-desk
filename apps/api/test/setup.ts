@@ -8,7 +8,7 @@ afterEach(async () => {
   await db.execute(sql`
     TRUNCATE TABLE
       ticket_status_history, comments, attachments, tickets,
-      invites, users, teams
+      invites, users, teams, tags, ticket_tags
     RESTART IDENTITY CASCADE
   `);
 });

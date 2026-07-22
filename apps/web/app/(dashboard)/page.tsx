@@ -20,6 +20,8 @@ import { TicketFilters } from "@/components/shared/ticket-filters";
 import { TicketRow } from "@/components/shared/ticket-row";
 import { TicketRowSkeleton } from "@/components/shared/ticket-row-skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
+import { useRouter } from "next/navigation";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
 
 export default function Dashboard() {
   const [filters, setFilters] = useQueryStates({
