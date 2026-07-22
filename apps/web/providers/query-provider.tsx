@@ -2,10 +2,18 @@
 
 import { ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { logout } from "@/features/auth/api";
+import * as authApi from "@/features/auth/api";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export function QueryProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
+
+  async function logout() {
+    await authApi.logout();
+    router.push("/login");
+  }
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -22,6 +30,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 
               return failureCount < 3;
             },
+            retryDelay: 1000,
           },
         },
       }),
