@@ -38,6 +38,7 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/sladesk_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret
+          PORT: 8000
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -52,6 +53,7 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/sladesk_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret
+          PORT: 8000
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
