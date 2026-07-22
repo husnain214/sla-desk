@@ -8,7 +8,7 @@ export async function cannedReplyRoutes(fastify: AppInstance) {
     "/",
     {
       preHandler: [authenticate, requireRole(["agent", "admin"])],
-      schema: { body: createCannedReplySchema },
+      schema: { body: createCannedReplySchema, tags: ["Canned Replies"] },
     },
     async (request, reply) => {
       const created = await repo.insertCannedReply({
@@ -21,7 +21,10 @@ export async function cannedReplyRoutes(fastify: AppInstance) {
 
   fastify.get(
     "/",
-    { preHandler: [authenticate, requireRole(["agent", "admin"])] },
+    {
+      preHandler: [authenticate, requireRole(["agent", "admin"])],
+      schema: { tags: ["Canned Replies"] },
+    },
     async (request, reply) => {
       reply.send(await repo.findAllCannedReplies());
     },

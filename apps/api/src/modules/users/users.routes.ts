@@ -24,6 +24,7 @@ export function userRoutes(fastify: AppInstance) {
       schema: {
         params: z.object({ id: z.string() }),
         body: z.object({ teamId: z.uuid().nullable() }),
+        tags: ["Users"],
       },
     },
     async (request, reply) => {

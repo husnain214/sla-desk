@@ -8,7 +8,7 @@ export async function tagRoutes(fastify: AppInstance) {
     "/",
     {
       preHandler: [authenticate, requireRole(["admin", "agent"])],
-      schema: { body: createTagSchema },
+      schema: { body: createTagSchema, tags: ["Tags"] },
     },
     async (request, reply) => {
       const tag = await tagsService.createTag(request.body.name);
@@ -16,7 +16,11 @@ export async function tagRoutes(fastify: AppInstance) {
     },
   );
 
-  fastify.get("/", { preHandler: [authenticate] }, async (request, reply) => {
-    reply.send(await tagsService.listTags());
-  });
+  fastify.get(
+    "/",
+    { preHandler: [authenticate], schema: { tags: ["Tags"] } },
+    async (_, reply) => {
+      reply.send(await tagsService.listTags());
+    },
+  );
 }

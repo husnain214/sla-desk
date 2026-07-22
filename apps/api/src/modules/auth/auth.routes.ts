@@ -54,7 +54,10 @@ export async function authRoutes(fastify: AppInstance) {
 
   fastify.patch(
     "/me",
-    { preHandler: [authenticate], schema: { body: updateProfileSchema } },
+    {
+      preHandler: [authenticate],
+      schema: { body: updateProfileSchema, tags: ["Auth"] },
+    },
     async (request, reply) => {
       const user = await authService.updateProfile(
         request.user.userId,
@@ -67,7 +70,10 @@ export async function authRoutes(fastify: AppInstance) {
 
   fastify.patch(
     "/password",
-    { preHandler: [authenticate], schema: { body: changePasswordSchema } },
+    {
+      preHandler: [authenticate],
+      schema: { body: changePasswordSchema, tags: ["Auth"] },
+    },
     async (request, reply) => {
       await authService.changePassword(request.user.userId, request.body);
       reply.send({ success: true });

@@ -71,6 +71,6 @@ app.register(teamRoutes, { prefix: "/api/teams" });
 app.register(tagRoutes, { prefix: "/api/tags" });
 app.register(cannedReplyRoutes, { prefix: "/api/canned-replies" });
 
-app.get("/", (_, res) => {
+app.get("/", { schema: { tags: ["Health Check"] } }, (_, res) => {
   res.send({ message: "Server is running" });
 });

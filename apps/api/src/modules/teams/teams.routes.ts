@@ -9,7 +9,7 @@ export async function teamRoutes(fastify: AppInstance) {
     "/",
     {
       preHandler: [authenticate, requireRole(["admin"])],
-      schema: { body: createTeamSchema },
+      schema: { body: createTeamSchema, tags: ["Teams"] },
     },
     async (request, reply) => {
       const team = await teamsService.createTeam(request.body);
@@ -19,8 +19,13 @@ export async function teamRoutes(fastify: AppInstance) {
 
   fastify.get(
     "/",
-    { preHandler: [authenticate, requireRole(["admin", "agent"])] },
-    async (request, reply) => {
+    {
+      preHandler: [authenticate, requireRole(["admin", "agent"])],
+      schema: {
+        tags: ["Teams"],
+      },
+    },
+    async (_, reply) => {
       reply.send(await teamsService.listTeams());
     },
   );
@@ -29,7 +34,7 @@ export async function teamRoutes(fastify: AppInstance) {
     "/:id",
     {
       preHandler: [authenticate, requireRole(["admin"])],
-      schema: { params: z.object({ id: z.string() }) },
+      schema: { params: z.object({ id: z.string() }), tags: ["Teams"] },
     },
     async (request, reply) => {
       await teamsService.deleteTeamById(request.params.id);
