@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env.production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+
+  sla-worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env.production
+    command: ["npx", "tsx", "src/workers/sla-breach.worker.ts"]
+    depends_on:
+      - redis
+
+  escalation-worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env.production
+    command: ["npx", "tsx", "src/workers/escalation.worker.ts"]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:8.8-alpine
+    restart: unless-stopped
+    # no volume — everything Redis holds here is safe to lose on restart
+    # no published port — only reachable by other containers on this compose network
