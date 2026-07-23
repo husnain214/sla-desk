@@ -4,7 +4,6 @@ import { ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as authApi from "@/features/auth/api";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -21,7 +20,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           queries: {
             retry(failureCount, error) {
               if (error.message === "Unauthorized") {
-                toast.error("Session expired!");
                 logout();
                 return false;
               }
