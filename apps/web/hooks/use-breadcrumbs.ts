@@ -21,7 +21,6 @@ export function useBreadcrumbs(): Breadcrumb[] {
   const isTicketDetail = segments[0] === "tickets" && segments.length === 2;
   const { data: ticket } = useTicket(isTicketDetail ? segments[1] : "");
 
-  // root route ("/") is the tickets list itself
   if (segments.length === 0) {
     return [{ label: "Tickets", href: "/" }];
   }
@@ -32,6 +31,13 @@ export function useBreadcrumbs(): Breadcrumb[] {
 
   return segments.reduce((acc, segment, i) => {
     const href = "/" + segments.slice(0, i + 1).join("/");
+
+    // "tickets" is never a real route on its own — the list lives at "/" —
+    // so skip rendering this segment as its own crumb entirely
+    if (segments[0] === "tickets" && i === 0) {
+      acc.push({ label: "Tickets", href: "/" });
+      return acc;
+    }
 
     if (STATIC_LABELS[segment]) {
       acc.push({ label: STATIC_LABELS[segment], href });
