@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +11,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -29,10 +31,14 @@ export function AppSidebar() {
   const logoutMutation = useLogout();
   const router = useRouter();
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    setOpenMobile(false);
+  }, [pathname, setOpenMobile]);
 
   const isAgentOrAdmin = user?.role === "agent" || user?.role === "admin";
   const isAdmin = user?.role === "admin";
-
   const initials = getInitials(user?.name || "");
 
   function handleLogout() {
