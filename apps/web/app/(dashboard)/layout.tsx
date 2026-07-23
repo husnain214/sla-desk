@@ -7,6 +7,7 @@ import { SocketProvider } from "@/providers/socket-provider";
 import { useAuth } from "@/features/auth/hooks";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { logout } from "@/features/auth/api";
 
 export default function DashboardLayout({
   children,
@@ -16,13 +17,18 @@ export default function DashboardLayout({
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   async function check() {
+  //     if (!isLoading && !user) {
+  //       router.push("/login");
+  //       logout();
+  //     }
+  //   }
 
-  if (isLoading) {
+  //   check();
+  // }, [user, isLoading, router]);
+
+  if (isLoading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="size-6 animate-spin rounded-full border-2 border-muted border-t-primary" />

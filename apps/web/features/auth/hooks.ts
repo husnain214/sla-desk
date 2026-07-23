@@ -10,7 +10,6 @@ export function useAuth() {
   const { data: user, isLoading } = useQuery({
     queryKey: queryKeys.auth.me,
     queryFn: authApi.getMe,
-    retry: false,
   });
 
   return { user, isLoading };
