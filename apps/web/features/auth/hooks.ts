@@ -3,8 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import * as authApi from "./api";
-import { loginServerAction } from "./actions";
-import { LoginPayload } from "@myapp/shared";
 
 export function useAuth() {
   const { data: user, isLoading } = useQuery({

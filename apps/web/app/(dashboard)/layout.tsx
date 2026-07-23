@@ -5,28 +5,14 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/providers/auth-provider";
 import { SocketProvider } from "@/providers/socket-provider";
 import { useAuth } from "@/features/auth/hooks";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { logout } from "@/features/auth/api";
+import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const { user, isLoading } = useAuth();
-
-  // useEffect(() => {
-  //   async function check() {
-  //     if (!isLoading && !user) {
-  //       router.push("/login");
-  //       logout();
-  //     }
-  //   }
-
-  //   check();
-  // }, [user, isLoading, router]);
 
   if (isLoading || !user) {
     return (
@@ -44,9 +30,7 @@ export default function DashboardLayout({
           <main className="flex-1">
             <header className="flex items-center gap-3 border-b border-border px-6 py-3">
               <SidebarTrigger />
-              <span className="font-display text-sm text-muted-foreground">
-                Dashboard
-              </span>
+              <Breadcrumbs />
             </header>
             <div className="p-6">{children}</div>
           </main>

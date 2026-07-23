@@ -27,6 +27,7 @@ export function useTicket(id: string) {
   return useQuery({
     queryKey: queryKeys.tickets.detail(id),
     queryFn: () => ticketsApi.getTicketById(id),
+    enabled: !!id,
   });
 }
 
