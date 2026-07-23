@@ -11,7 +11,7 @@ import {
 
 export async function attachmentRoutes(fastify: AppInstance) {
   fastify.post(
-    "/:ticketId/attachments/upload-url",
+    "/tickets/:ticketId/attachments/upload-url",
     {
       preHandler: [authenticate],
       schema: {
@@ -31,7 +31,7 @@ export async function attachmentRoutes(fastify: AppInstance) {
   );
 
   fastify.post(
-    "/:ticketId/attachments",
+    "/tickets/:ticketId/attachments",
     {
       preHandler: [authenticate],
       schema: {

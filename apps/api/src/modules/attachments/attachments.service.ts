@@ -27,7 +27,6 @@ export async function requestUploadUrl(
     Bucket: env.R2_BUCKET_NAME,
     Key: fileKey,
     ContentType: payload.mimeType,
-    ContentLength: payload.fileSize,
   });
 
   const uploadUrl = await getSignedUrl(r2Client, command, { expiresIn: 300 }); // 5 minutes to complete the upload

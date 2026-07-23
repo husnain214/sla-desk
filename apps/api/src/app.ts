@@ -22,6 +22,7 @@ import { userRoutes } from "./modules/users/users.routes";
 import { teamRoutes } from "./modules/teams/teams.routes";
 import { tagRoutes } from "./modules/tags/tags.routes";
 import { cannedReplyRoutes } from "./modules/canned-replies/canned-replies.routes";
+import { attachmentRoutes } from "./modules/attachments/attachments.routes";
 
 export const app = Fastify({
   logger: true,
@@ -69,6 +70,7 @@ app.register(commentRoutes, { prefix: "/api/tickets/:ticketId/comments" });
 app.register(inviteRoutes, { prefix: "/api/invites" });
 app.register(teamRoutes, { prefix: "/api/teams" });
 app.register(tagRoutes, { prefix: "/api/tags" });
+app.register(attachmentRoutes, { prefix: "/api" });
 app.register(cannedReplyRoutes, { prefix: "/api/canned-replies" });
 
 app.get("/", { schema: { tags: ["Health Check"] } }, (_, res) => {
